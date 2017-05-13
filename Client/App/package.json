@@ -1,0 +1,48 @@
+{
+  "name": "b3itutils",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest --coverage",
+    "tsc": "tsc",
+    "clean": "rimraf artifacts",
+    "build": "npm run clean && npm run tsc --",
+    "lint": "tslint src/**/*.ts",
+    "watch": "npm run build -- -w",
+    "start:ios": "npm run build && concurrently -r \"npm run watch\" \"react-native run-ios\"",
+    "start:android": "npm run build && concurrently -r \"npm run watch\" \"react-native run-android\""
+  },
+  "dependencies": {
+    "react": "16.0.0-alpha.6",
+    "react-native": "0.44.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^19.2.3",
+    "@types/react": "^15.0.24",
+    "@types/react-native": "^0.44.0",
+    "babel-jest": "20.0.1",
+    "babel-preset-react-native": "1.9.2",
+    "concurrently": "^3.4.0",
+    "jest": "20.0.1",
+    "react-native-cli": "^2.0.1",
+    "react-test-renderer": "16.0.0-alpha.6",
+    "rimraf": "^2.6.1",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2"
+  },
+  "jest": {
+    "preset": "react-native",
+    "testRegex": "artifacts/.+\\.(test|spec).js$",
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text-summary",
+      "html"
+    ],
+    "collectCoverageFrom": [
+      "artifacts/**/*.js",
+      "!artifacts/**/*.spec.js",
+      "!artifacts/**/*.index.js"
+    ]
+  }
+}
