@@ -2,11 +2,10 @@ import React from "react";
 import { View, Text, StyleSheet, Platform, Button } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { /*Actions*/ } from "react-native-router-flux";
 
 // import {  } from "../components";
-import { User } from "../modules";
-import { /*Pages*/ } from "../Constants";
+import { User, Base } from "../modules";
+import { Pages } from "../Constants";
 
 interface IStoreProps {
     UserName: string;
@@ -15,10 +14,14 @@ interface IStoreProps {
 interface IProps {
     store: IStoreProps;
     userActions: User.Actions.ActionsMap;
+    baseActions: Base.Actions.ActionsMap;
 }
 
 // @connect<StateProps, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)
 class MainMenu extends React.Component<IProps, {}> {
+    static navigationOptions = {
+        title: "Main menu"
+    };
     render() {
         return (
             <View style={styles.container}>
@@ -43,6 +46,9 @@ class MainMenu extends React.Component<IProps, {}> {
                     </View>
                 </View>
                 <Text>{this.props.store.UserName}</Text>
+                <View>
+                    <Button color={"black"} title="Go to TestPage" onPress={() => { this.props.baseActions.navigate(Pages.TESTPAGE); } } />
+                </View>
             </View>
         );
     }
@@ -89,7 +95,8 @@ function mapStateToProps(state: StoreDef): IProps {
 
 function mapDispatchToProps(dispatch: any): IProps {
     return {
-        userActions: bindActionCreators(User.Actions.Actions, dispatch)
+        userActions: bindActionCreators(User.Actions.Actions, dispatch),
+        baseActions: bindActionCreators(Base.Actions.Actions, dispatch)
     } as IProps;
 }
 

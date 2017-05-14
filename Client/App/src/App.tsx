@@ -8,9 +8,15 @@ import AppWithNavigationState, { AppNavigator } from "./AppNavigator";
 import { User, Base } from "./modules";
 import { Pages, Modules } from "./Constants";
 
+import { composeWithDevTools } from "remote-redux-devtools";
+
 // import codePush from "react-native-code-push";
 
-const middleware = applyMiddleware(thunk);
+const middeWares = [
+    thunk
+];
+
+const middleware = composeWithDevTools(applyMiddleware(...middeWares));
 
 const rootReducer = combineReducers<StoreDef>({
     [Modules.user]: User.Reducer,
