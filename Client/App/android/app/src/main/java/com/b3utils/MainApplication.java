@@ -1,4 +1,4 @@
-package com.b3itutils;
+package com.b3utils;
 
 import android.app.Application;
 

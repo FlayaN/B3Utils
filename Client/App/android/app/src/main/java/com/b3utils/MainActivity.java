@@ -1,4 +1,4 @@
-package com.b3itutils;
+package com.b3utils;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
      */
     @Override
     protected String getMainComponentName() {
-        return "B3ITUtils";
+        return "B3Utils";
     }
 }
