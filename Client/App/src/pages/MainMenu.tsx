@@ -54,29 +54,29 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#F5FCFF"
-    } as React.ViewStyle,
+    },
 
     welcome: {
         fontSize: 20,
         textAlign: "center",
         margin: 10
-    } as React.TextStyle,
+    },
 
     instructions: {
         textAlign: "center",
         color: "#333333",
         marginBottom: 50,
         marginTop: 10
-    } as React.TextStyle,
+    },
 
     reduxButtons: {
         flexDirection: "row",
         marginBottom: 10
-    } as React.ViewStyle,
+    },
 
     firstButton: {
         marginRight: 10
-    } as React.ViewStyle
+    }
 });
 
 function mapStateToProps(state: StoreDef): IProps {
