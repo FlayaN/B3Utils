@@ -293,3 +293,6 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+*.realm
+*.realm.lock

@@ -1,6 +1,6 @@
 import { ActionTypes } from "./Constants";
 import { ActionCreatorsMapObject } from "redux";
-import { Pages } from "../../Constants";
+import { Pages } from "../../Base/Constants";
 export interface ActionsMap extends ActionCreatorsMapObject {
     navigate(to: Pages): Action<string>;
 }

@@ -1,4 +1,4 @@
-import App from "./App";
+import App from "./Base/App";
 
 import { AppRegistry } from "react-native";
 

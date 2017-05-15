@@ -1,7 +1,7 @@
 import { handleActions } from "redux-actions";
 import { ActionTypes } from "./Constants";
 
-import { AppNavigator } from "../../AppNavigator";
+import { AppNavigator } from "../../Base/AppNavigator";
 import { NavigationActions } from "react-navigation";
 
 const Reducer = handleActions({

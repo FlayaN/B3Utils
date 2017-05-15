@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux";
 
 // import {  } from "../components";
 import { User, Base } from "../modules";
-import { Pages } from "../Constants";
+import { Pages } from "../Base/Constants";
 
 interface IStoreProps {
     UserName: string;
