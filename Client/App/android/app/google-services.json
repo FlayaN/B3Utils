@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "509942424685",
+    "project_id": "b3utils-test"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509942424685:android:4e881dcd68b59e71",
+        "android_client_info": {
+          "package_name": "com.b3utils"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "509942424685-uhvcjn1o3lpfufdg18f65gk6og4o2032.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "509942424685-fpvo5dui5e446v1sqdc6apsk4l9k9f00.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.b3utils",
+            "certificate_hash": "9f5e9fa4effe8326449875cc8cd4ade602809b79"
+          }
+        },
+        {
+          "client_id": "509942424685-ojd84ecu7eobre41dqp504arseomtdtk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.b3utils",
+            "certificate_hash": "04b5a19f1c6b194b93ba083b9ecd9ade38071890"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAPZSjHiCrZWnribMptYujn2UROI-vIku4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

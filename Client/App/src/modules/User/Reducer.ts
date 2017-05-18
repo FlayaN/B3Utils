@@ -2,9 +2,15 @@ import { handleActions } from "redux-actions";
 import { ActionTypes } from "./Constants";
 
 const Reducer = handleActions({
-    [ActionTypes.SET_NAME]: (state: UserDef, action: Action<string>) => {
+    [ActionTypes.SET_GOOGLEUSER]: (state: UserDef, action: Action<GoogleUser>) => {
+        console.log(action.data);
         return Object.assign({}, state, {
-            name: action.data
+            googleUser: action.data
+        } as UserDef);
+    },
+    [ActionTypes.SET_AVATAR]: (state: UserDef, action: Action<string>) => {
+        return Object.assign({}, state, {
+            avatarUrl: action.data
         } as UserDef);
     }
 }, {});

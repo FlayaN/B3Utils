@@ -1,34 +1,31 @@
 import React from "react";
-import { View, Text, StyleSheet, Platform, Button } from "react-native";
+import { View, Text, StyleSheet, Platform, Button, Image } from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 // import {  } from "../components";
-import { User, Base } from "../modules";
+import { Base } from "../modules";
 import { Pages } from "../Base/Constants";
 
 interface IStoreProps {
-    UserName: string;
+    name: string;
+    avatarUrl: string;
 }
 
 interface IProps {
     store: IStoreProps;
-    userActions: User.Actions.ActionsMap;
     baseActions: Base.Actions.ActionsMap;
 }
 
 // @connect<StateProps, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)
 class MainMenu extends React.Component<IProps, {}> {
     static navigationOptions = {
-        title: "Main menu"
+        title: "B3Utils"
     };
     render() {
+        console.log(this.props.store.avatarUrl);
         return (
             <View style={styles.container}>
-                <Text style={styles.welcome}>
-                    B3Utils
-                </Text>
-                {/*<Button title="Play" onPress={Actions[Pages.GAME]} />*/}
                 {Platform.OS === "android" ?
                     <Text style={styles.instructions}>
                         Android
@@ -37,17 +34,12 @@ class MainMenu extends React.Component<IProps, {}> {
                         IOS
                     </Text>
                 }
-                <View style={styles.reduxButtons}>
-                    <View style={styles.firstButton}>
-                        <Button color={"red"} title="Test redux! User1" onPress={() => { this.props.userActions.setName("User1"); } } />
-                    </View>
-                    <View>
-                        <Button color={"green"} title="Test redux! User2" onPress={() => { this.props.userActions.setName("User2"); } } />
-                    </View>
-                </View>
-                <Text>{this.props.store.UserName}</Text>
+                {this.props.store.avatarUrl !== "" ?
+                    <Image style={{ width: 50, height: 50 }} source={{ uri: this.props.store.avatarUrl }} /> :
+                    undefined}
+                <Text>{this.props.store.name}</Text>
                 <View>
-                    <Button color={"black"} title="Go to TestPage" onPress={() => { this.props.baseActions.navigate(Pages.TESTPAGE); } } />
+                    <Button color={"black"} title="Go to TestPage" onPress={() => { this.props.baseActions.navigate(Pages.TESTPAGE); }} />
                 </View>
             </View>
         );
@@ -62,40 +54,25 @@ const styles = StyleSheet.create({
         backgroundColor: "#F5FCFF"
     },
 
-    welcome: {
-        fontSize: 20,
-        textAlign: "center",
-        margin: 10
-    },
-
     instructions: {
         textAlign: "center",
         color: "#333333",
         marginBottom: 50,
         marginTop: 10
-    },
-
-    reduxButtons: {
-        flexDirection: "row",
-        marginBottom: 10
-    },
-
-    firstButton: {
-        marginRight: 10
     }
 });
 
 function mapStateToProps(state: StoreDef): IProps {
     return {
         store: {
-            UserName: state.user.name
+            name: state.user.googleUser.name,
+            avatarUrl: state.user.avatarUrl
         } as IStoreProps
     } as IProps;
 }
 
 function mapDispatchToProps(dispatch: any): IProps {
     return {
-        userActions: bindActionCreators(User.Actions.Actions, dispatch),
         baseActions: bindActionCreators(Base.Actions.Actions, dispatch)
     } as IProps;
 }

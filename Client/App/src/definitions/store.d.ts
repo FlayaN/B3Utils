@@ -4,7 +4,8 @@ interface BaseDef {
 }
 
 interface UserDef {
-    name: string;
+    googleUser: GoogleUser;
+    avatarUrl: string;
 }
 
 interface StoreDef {

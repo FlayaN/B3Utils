@@ -28,7 +28,18 @@ const tempNavState = AppNavigator.router.getStateForAction(firstAction);
 
 const defaultStore: StoreDef = {
     user: {
-        name: "User1"
+        googleUser: {
+            accessToken: "",
+            email: "",
+            familyName: "",
+            givenName: "",
+            idToken: "",
+            name: "",
+            photoUrlTiny: "",
+            serverAuthCode: "",
+            userID: ""
+        },
+        avatarUrl: ""
     },
     base: {
         currPage: "start",
@@ -41,13 +52,13 @@ const store = createStore<StoreDef>(rootReducer, defaultStore, middleware);
 
 if (module.hot) {
     module.hot.accept(() => {
-      const nextRootReducer = rootReducer;
-      store.replaceReducer(nextRootReducer);
+        const nextRootReducer = rootReducer;
+        store.replaceReducer(nextRootReducer);
     });
 }
 
 class App extends React.Component<{}, {}> {
-    componentDidMount() {
+    async componentDidMount() {
         // Download update
         // codePush.sync();
     }

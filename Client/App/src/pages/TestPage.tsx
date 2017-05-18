@@ -32,7 +32,7 @@ class TestPage extends React.Component<IProps, {}> {
 function mapStateToProps(state: StoreDef): IProps {
     return {
         store: {
-            UserName: state.user.name
+            UserName: state.user.googleUser.email
         } as IStoreProps
     } as IProps;
 }
