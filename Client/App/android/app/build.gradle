@@ -99,6 +99,20 @@ android {
             abiFilters "armeabi-v7a", "x86"
         }
     }
+    signingConfigs {
+        release {
+            storeFile file('tmprelease.keystore')
+            storePassword 'hejsan123'
+            keyAlias 'release-alias'
+            keyPassword 'hejsan1234'
+            // if(project.hasProperty("B3UTILS_RELEASE_STORE_FILE")) {
+            //     storeFile file(B3UTILS_RELEASE_STORE_FILE)
+            //     storePassword B3UTILS_RELEASE_STORE_PASSWORD
+            //     keyAlias B3UTILS_RELEASE_KEY_ALIAS
+            //     keyPassword B3UTILS_RELEASE_KEY_PASSWORD
+            // }
+        }
+    }
     splits {
         abi {
             reset()
@@ -111,6 +125,7 @@ android {
         release {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
         }
     }
     // applicationVariants are e.g. debug, release
