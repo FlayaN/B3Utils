@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Api.Models.Database;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
 
 namespace Api
 {
@@ -18,6 +21,11 @@ namespace Api
         
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddDbContext<AppDbContext>(config => {
+                config.UseSqlServer(Configuration.GetConnectionString("AppDatabase"));
+            });
+
             services.AddMvc();
 
             services.AddSwaggerGen(c =>
@@ -25,7 +33,8 @@ namespace Api
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
 
-            //services.AddDbContext<DbContext>();
+            services.AddAutoMapper();
+            
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)

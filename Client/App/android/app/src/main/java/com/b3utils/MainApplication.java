@@ -3,6 +3,7 @@ package com.b3utils;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnative.googlefit.GoogleFitPackage;
 import com.reactlibrary.googlesignin.RNGoogleSignInPackage;
 import io.realm.react.RealmReactPackage;
 import com.facebook.react.ReactNativeHost;
@@ -25,6 +26,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+          new GoogleFitPackage(BuildConfig.APPLICATION_ID),
           new RNGoogleSignInPackage(),
           new RealmReactPackage()
       );

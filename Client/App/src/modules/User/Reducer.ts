@@ -3,7 +3,6 @@ import { ActionTypes } from "./Constants";
 
 const Reducer = handleActions({
     [ActionTypes.SET_GOOGLEUSER]: (state: UserDef, action: Action<GoogleUser>) => {
-        console.log(action.data);
         return Object.assign({}, state, {
             googleUser: action.data
         } as UserDef);

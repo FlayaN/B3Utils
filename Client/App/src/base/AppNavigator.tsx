@@ -3,18 +3,20 @@ import { connect } from "react-redux";
 import { addNavigationHelpers, StackNavigator, NavigationActions } from "react-navigation";
 
 import { Pages } from "./Constants";
-import { MainMenu, TestPage } from "../pages";
+import { MainMenu, Fitness } from "../pages";
 import { User } from "../modules";
 import { bindActionCreators } from "redux";
 
 import { BackHandler } from "react-native";
 
-import { LoginWithGoogle } from "./Utilities";
+import { LoginWithGoogle, AddUser } from "./Utilities";
 
 export const AppNavigator = StackNavigator({
     [Pages.MAINMENU]: { screen: MainMenu },
-    [Pages.TESTPAGE]: { screen: TestPage }
+    [Pages.FITNESS]: { screen: Fitness }
 });
+
+import GoogleFit from "react-native-google-fit";
 
 interface INavObject {
     index: number;
@@ -40,18 +42,36 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
     async componentDidMount() {
 
         const user = await LoginWithGoogle();
+
         this.props.userActions.setGoogleUser(user);
 
         const apiKey = "AIzaSyAPZSjHiCrZWnribMptYujn2UROI-vIku4";
 
         const response = await fetch(`https://www.googleapis.com/plus/v1/people/${this.props.store.userID}?fields=image&key=${apiKey}`);
         const responseJson = await response.json();
-        console.log(responseJson);
-
         this.props.userActions.setAvatar(responseJson.image.url);
+
+        await AddUser({
+            name: user.name,
+            avatarUrl: responseJson.image.url,
+            lastRecordedDate: new Date().toISOString(),
+            userId: user.userID,
+            totalDistance: 0
+        });
+
+        await GoogleFit.authorizeFit();
+        await GoogleFit.onAuthorize((result) => {
+            console.log(result);
+        });
+
+        await GoogleFit.observeSteps((step) => {
+            console.log(step);
+        });
+
         BackHandler.addEventListener("hardwareBackPress", this.onBackPress);
     }
     componentWillUnmount() {
+        GoogleFit.usubscribeListeners();
         BackHandler.removeEventListener("hardwareBackPress", this.onBackPress);
     }
     onBackPress = () => {
@@ -80,9 +100,9 @@ function mapStateToProps(state: StoreDef): IProps {
 }
 
 function mapDispatchToProps(dispatch: any): IProps {
-    return {
+    return Object.assign({ dispatch: dispatch }, {
         userActions: bindActionCreators(User.Actions.Actions, dispatch)
-    } as IProps;
+    } as IProps);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AppWithNavigationState);

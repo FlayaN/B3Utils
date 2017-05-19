@@ -39,7 +39,7 @@ class MainMenu extends React.Component<IProps, {}> {
                     undefined}
                 <Text>{this.props.store.name}</Text>
                 <View>
-                    <Button color={"black"} title="Go to TestPage" onPress={() => { this.props.baseActions.navigate(Pages.TESTPAGE); }} />
+                    <Button color={"black"} title="Gå till fitness" onPress={() => { this.props.baseActions.navigate(Pages.FITNESS); }} />
                 </View>
             </View>
         );

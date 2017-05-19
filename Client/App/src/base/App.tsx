@@ -5,7 +5,7 @@ import thunk from "redux-thunk";
 
 import AppWithNavigationState, { AppNavigator } from "./AppNavigator";
 
-import { User, Base } from "../modules";
+import { User, Base, Fitness } from "../modules";
 import { Pages, Modules } from "./Constants";
 
 import { composeWithDevTools } from "remote-redux-devtools";
@@ -20,7 +20,8 @@ const middleware = composeWithDevTools(applyMiddleware(...middeWares));
 
 const rootReducer = combineReducers<StoreDef>({
     [Modules.user]: User.Reducer,
-    [Modules.base]: Base.Reducer
+    [Modules.base]: Base.Reducer,
+    [Modules.fitness]: Fitness.Reducer
 });
 
 const firstAction = AppNavigator.router.getActionForPathAndParams(Pages.MAINMENU);
@@ -44,6 +45,9 @@ const defaultStore: StoreDef = {
     base: {
         currPage: "start",
         navData: tempNavState
+    },
+    fitness: {
+        users: []
     }
 };
 

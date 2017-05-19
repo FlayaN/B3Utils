@@ -8,7 +8,12 @@ interface UserDef {
     avatarUrl: string;
 }
 
+interface FitnessDef {
+    users: IUserViewModel[];
+}
+
 interface StoreDef {
     user: UserDef;
     base: BaseDef;
+    fitness: FitnessDef;
 }

@@ -1,7 +1,7 @@
 import MainMenu from "./MainMenu";
-import TestPage from "./TestPage";
+import Fitness from "./Fitness";
 
 export {
     MainMenu,
-    TestPage
+    Fitness
 };
