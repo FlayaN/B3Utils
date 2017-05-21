@@ -17,7 +17,10 @@ export const AppNavigator = StackNavigator({
     [Pages.MAINMENU]: { screen: MainMenu },
     [Pages.FITNESS]: { screen: FitnessPage },
     [Pages.EVENTLOG]: { screen: EventLog },
-    [Pages.FITNESS_USER]: { screen: FitnessUser }
+    [Pages.FITNESS_USER]: {
+        screen: FitnessUser,
+        path: "fitness/:id"
+    }
 });
 
 import GoogleFit from "react-native-google-fit";

@@ -22,6 +22,7 @@ interface UserDef {
 interface FitnessDef {
     users: IUserViewModel[];
     initialized: boolean;
+    activitiesData: { [userId: string]: IActivityViewModel[] };
 }
 
 interface StoreDef {

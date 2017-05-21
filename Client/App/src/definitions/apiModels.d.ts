@@ -1,4 +1,5 @@
 interface IActivityViewModel {
+    activityId: string;
     userId: string;
     date: Date;
     type: string;

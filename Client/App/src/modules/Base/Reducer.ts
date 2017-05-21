@@ -16,8 +16,8 @@ const Reducer = handleActions({
         eventLog.push({ type: EventType.Error, message: action.data });
         return update(state, { eventLog: eventLog });
     },
-    [ActionTypes.NAVIGATE]: (state: BaseDef, action: Action<string>) => {
-        const newAction = NavigationActions.navigate({ routeName: action.data });
+    [ActionTypes.NAVIGATE]: (state: BaseDef, action: Action<NavigateData>) => {
+        const newAction = NavigationActions.navigate({ routeName: action.data.to, params: action.data.params});
         return updateStateWithNewNavData(newAction, state);
     },
     ["Navigation/BACK"]: (state: BaseDef, action: any) => {

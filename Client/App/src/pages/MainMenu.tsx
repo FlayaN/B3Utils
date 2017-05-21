@@ -18,19 +18,17 @@ interface IProps {
     baseActions: Base.Actions.ActionsMap;
 }
 
-// @connect<StateProps, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)
 class MainMenu extends React.Component<IProps, {}> {
     static navigationOptions = {
         title: "B3Utils"
     };
     render() {
-        console.log(this.props.store.avatarUrl);
         return (
             <View style={styles.container}>
                 <View>
                     <Button
                         color={"red"} title="Gå till loggen"
-                        onPress={() => { this.props.baseActions.navigate(Pages.EVENTLOG); }} />
+                        onPress={() => { this.props.baseActions.navigate({to: Pages.EVENTLOG}); }} />
                 </View>
                 {Platform.OS === "android" ?
                     <Text style={styles.instructions}>
@@ -48,7 +46,7 @@ class MainMenu extends React.Component<IProps, {}> {
                     <Button
                         disabled={!this.props.store.fitnessInitialized}
                         color={"black"} title="Gå till fitness"
-                        onPress={() => { this.props.baseActions.navigate(Pages.FITNESS); }} />
+                        onPress={() => { this.props.baseActions.navigate({to: Pages.FITNESS}); }} />
                 </View>
             </View>
         );

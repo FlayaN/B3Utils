@@ -49,7 +49,8 @@ const defaultStore: StoreDef = {
     },
     fitness: {
         users: [],
-        initialized: false
+        initialized: false,
+        activitiesData: {}
     }
 };
 

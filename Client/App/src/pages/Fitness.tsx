@@ -8,11 +8,13 @@ import {
     SectionList,
     Image,
     StyleSheet,
-    Button
+    Button,
+    TouchableOpacity
 } from "react-native";
 
-import { Fitness } from "../Modules";
+import { Fitness, Base } from "../Modules";
 import { GetUsers, GetUser, AddActivity } from "../Base/Utilities";
+import { Pages } from "../Base/Constants";
 import GoogleFit from "react-native-google-fit";
 
 interface IStoreProps {
@@ -29,6 +31,7 @@ interface IListItem {
 interface IProps {
     store: IStoreProps;
     fitnessActions: Fitness.Actions.ActionsMap;
+    baseActions: Base.Actions.ActionsMap;
 }
 
 class FitnessPage extends React.Component<IProps, {}> {
@@ -57,6 +60,7 @@ class FitnessPage extends React.Component<IProps, {}> {
             if (data === false) {
                 extra.forEach(item => {
                     AddActivity({
+                        activityId: "",
                         userId: this.props.store.userID,
                         amount: item.distance,
                         date: item.endDate,
@@ -72,9 +76,8 @@ class FitnessPage extends React.Component<IProps, {}> {
     render() {
         let { users } = this.props.store;
         users = users.map(item => { return { ...item, key: item.userId }; });
-        console.log("render", users);
         return (
-            <View>
+            <View style={{flex: 1}}>
                 <Button title="Refresh" onPress={this.updateData} />
                 <Text>
                     User: {this.props.store.email}
@@ -82,11 +85,13 @@ class FitnessPage extends React.Component<IProps, {}> {
                 <SectionList
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
                     renderItem={(item: IListItem) => (
-                        <View style={styles.itemRow}>
-                            <Image style={{ width: 50, height: 50 }} source={{ uri: item.item.avatarUrl }} />
-                            <Text style={styles.column}>{item.item.name}</Text>
-                            <Text style={styles.column}>{(item.item.totalDistance / 1000).toFixed(2)}km</Text>
-                        </View>
+                        <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS_USER, params: item.item }); }}>
+                            <View style={styles.itemRow}>
+                                <Image style={{ width: 50, height: 50 }} source={{ uri: item.item.avatarUrl }} />
+                                <Text style={styles.column}>{item.item.name}</Text>
+                                <Text style={styles.column}>{(item.item.totalDistance / 1000).toFixed(2)}km</Text>
+                            </View>
+                        </TouchableOpacity>
                     )}
                     sections={[
                         { data: users, key: "Längst sträcka" }
@@ -123,7 +128,8 @@ function mapStateToProps(state: StoreDef): IProps {
 
 function mapDispatchToProps(dispatch): IProps {
     return {
-        fitnessActions: bindActionCreators(Fitness.Actions.Actions, dispatch)
+        fitnessActions: bindActionCreators(Fitness.Actions.Actions, dispatch),
+        baseActions: bindActionCreators(Base.Actions.Actions, dispatch)
     } as IProps;
 }
 

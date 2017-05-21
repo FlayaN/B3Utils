@@ -64,6 +64,18 @@ export async function AddActivity(activity: IActivityViewModel): Promise<void> {
     }
 }
 
+export async function GetActivities(userId: string): Promise<IActivityViewModel[]> {
+    let activities: IActivityViewModel[];
+    try {
+        const response = await fetch(`${baseUrl}/api/v1/Users/${userId}/activities`);
+        activities = await response.json();
+    } catch (exception) {
+        console.error(exception);
+        activities = undefined;
+    }
+    return activities;
+}
+
 export async function AddUser(user: IUserViewModel): Promise<void> {
     try {
         const response = await fetch(`${baseUrl}/api/v1/Users/`, {

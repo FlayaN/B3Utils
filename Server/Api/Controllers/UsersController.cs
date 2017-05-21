@@ -34,7 +34,7 @@ namespace Api.Controllers
                 .FirstOrDefault(x => x.UserId == userId);
             if(user != null)
             {
-                var activities = user.Activities.Select(Mapper.Map<ActivityViewModel>).ToList();
+                var activities = user.Activities.Select(Mapper.Map<ActivityViewModel>).OrderByDescending(x => x.Date).ToList();
                 return new ObjectResult(activities);
             }
             return NotFound();

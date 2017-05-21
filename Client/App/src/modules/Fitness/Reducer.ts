@@ -8,6 +8,12 @@ const Reducer = handleActions({
     },
     [ActionTypes.SET_INITIALIZED]: (state: FitnessDef, action: Action<boolean>) => {
         return update(state, { initialized: action.data });
+    },
+    [ActionTypes.SET_ACTIVITIES]: (state: FitnessDef, action: Action<UserActivities>) => {
+        let existing = state.activitiesData;
+        existing[action.data.userId] = action.data.activities;
+
+        return update(state, { activitiesData: existing });
     }
 }, {});
 

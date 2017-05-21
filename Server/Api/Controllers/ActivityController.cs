@@ -28,8 +28,6 @@ namespace Api.Controllers
                 .FirstOrDefault(x => x.UserId == activity.UserId);
             if (user != null)
             {
-                //user.LastRecordedDate = activity.EndDate;
-                //user.TotalDistance += activity.Amount;
                 if (user.Activities == null)
                 {
                     user.Activities = new List<Activity>();
@@ -49,7 +47,6 @@ namespace Api.Controllers
                 user.LastRecordedDate = activity.Date.Date;
                 await _context.SaveChangesAsync();
                 return Ok();
-                //return BadRequest("Already added that entry");
             }
             {
                 return NotFound();
