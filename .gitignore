@@ -296,3 +296,5 @@ _Pvt_Extensions
 
 *.realm
 *.realm.lock
+
+index.android.bundle
