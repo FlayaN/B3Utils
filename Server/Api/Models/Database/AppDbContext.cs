@@ -33,7 +33,7 @@ namespace Api.Models.Database
         [Key]
         public string UserId { get; set; }
         public string Name { get; set; }
-        public string LastRecordedDate { get; set; }
+        public DateTime LastRecordedDate { get; set; }
         public string AvatarUrl { get; set; }
         public double TotalDistance { get; set; }
 
@@ -46,8 +46,7 @@ namespace Api.Models.Database
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ActivityId { get; set; }
 
-        public string StartDate { get; set; }
-        public string EndDate { get; set; }
+        public DateTime Date { get; set; }
 
         public string Type { get; set; }
         public double Amount { get; set; }

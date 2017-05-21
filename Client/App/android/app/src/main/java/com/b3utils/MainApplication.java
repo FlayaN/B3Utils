@@ -34,7 +34,7 @@ public class MainApplication extends Application implements ReactApplication {
 
     @Override
     protected String getJSMainModuleName() {
-      return "artifacts/index.android";
+      return "index.android";
     }
   };
 

@@ -11,7 +11,7 @@ import {
     Button
 } from "react-native";
 
-import { Fitness } from "../modules";
+import { Fitness } from "../Modules";
 import { GetUsers, GetUser, AddActivity } from "../Base/Utilities";
 import GoogleFit from "react-native-google-fit";
 
@@ -38,26 +38,28 @@ class TestPage extends React.Component<IProps, {}> {
     constructor(props: IProps) {
         super(props);
         this.updateData = this.updateData.bind(this);
-        this.state = {
-            listData: []
-        };
     }
     async updateData() {
         this.props.fitnessActions.setUsers(await GetUsers());
 
         const currUser = await GetUser(this.props.store.userID);
 
+        let startDate = new Date(currUser.lastRecordedDate);
+        startDate.setHours(0, 0, 0, 0);
+
+        let endDate = new Date();
+        endDate.setHours(23, 59, 59, 999);
+
         GoogleFit.getDailyDistanceSamples({
-            startDate: currUser.lastRecordedDate,
-            endDate: new Date().toISOString()
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString()
         }, (data, extra) => {
             if (data === false) {
                 extra.forEach(item => {
                     AddActivity({
                         userId: this.props.store.userID,
                         amount: item.distance,
-                        startDate: item.startDate,
-                        endDate: item.endDate,
+                        date: item.endDate,
                         type: "getDailyDistanceSamples"
                     });
                 });
@@ -73,7 +75,7 @@ class TestPage extends React.Component<IProps, {}> {
         console.log("render", users);
         return (
             <View>
-                <Button title="Refresh" onPress={this.updateData}>Refresh2</Button>
+                <Button title="Refresh" onPress={this.updateData} />
                 <Text>
                     User: {this.props.store.email}
                 </Text>
@@ -83,7 +85,7 @@ class TestPage extends React.Component<IProps, {}> {
                         <View style={styles.itemRow}>
                             <Image style={{ width: 50, height: 50 }} source={{ uri: item.item.avatarUrl }} />
                             <Text style={styles.column}>{item.item.name}</Text>
-                            <Text style={styles.column}>{item.item.totalDistance}m</Text>
+                            <Text style={styles.column}>{(item.item.totalDistance / 1000).toFixed(2)}km</Text>
                         </View>
                     )}
                     sections={[

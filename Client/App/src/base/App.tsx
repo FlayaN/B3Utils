@@ -5,7 +5,7 @@ import thunk from "redux-thunk";
 
 import AppWithNavigationState, { AppNavigator } from "./AppNavigator";
 
-import { User, Base, Fitness } from "../modules";
+import { User, Base, Fitness } from "../Modules";
 import { Pages, Modules } from "./Constants";
 
 import { composeWithDevTools } from "remote-redux-devtools";
@@ -44,10 +44,12 @@ const defaultStore: StoreDef = {
     },
     base: {
         currPage: "start",
-        navData: tempNavState
+        navData: tempNavState,
+        eventLog: []
     },
     fitness: {
-        users: []
+        users: [],
+        initialized: false
     }
 };
 

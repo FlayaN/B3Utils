@@ -6,6 +6,7 @@ import { ActionCreatorsMapObject } from "redux";
 
 export interface ActionsMap extends ActionCreatorsMapObject {
     setUsers(users: IUserViewModel[]): Action<IUserViewModel[]>;
+    setInitialized(initialized: boolean): Action<boolean>;
 }
 
 export const Actions: ActionsMap = {
@@ -13,6 +14,12 @@ export const Actions: ActionsMap = {
         return {
             type: ActionTypes.SET_USERS,
             data: users
+        };
+    },
+    setInitialized: (initialized: boolean): Action<boolean> => {
+        return {
+            type: ActionTypes.SET_INITIALIZED,
+            data: initialized
         };
     }
 };

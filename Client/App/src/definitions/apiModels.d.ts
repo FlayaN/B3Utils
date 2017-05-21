@@ -1,7 +1,6 @@
 interface IActivityViewModel {
     userId: string;
-    startDate: string;
-    endDate: string;
+    date: Date;
     type: string;
     amount: number;
 }

@@ -14,10 +14,20 @@ export async function LoginWithGoogle(): Promise<GoogleUser> {
     }
 }
 
+export function update<T, K extends keyof T>(obj: T, updateSpec: Pick<T, K>): T {
+  const result = {} as T;
+  Object.keys(obj).forEach(key => result[key] = obj[key]);
+  Object.keys(updateSpec).forEach((key: K) => result[key] = updateSpec[key]);
+  return result;
+}
+
+const baseUrl = "https://b3utils.azurewebsites.net";
+// const baseUrl = "http://localhost:57603";
+
 export async function GetUsers(): Promise<IUserViewModel[]> {
     let users: IUserViewModel[];
     try {
-        const response = await fetch("https://b3utils.azurewebsites.net/api/v1/Users/");
+        const response = await fetch(`${baseUrl}/api/v1/Users/`);
         users = await response.json();
     } catch (exception) {
         console.error(exception);
@@ -29,7 +39,7 @@ export async function GetUsers(): Promise<IUserViewModel[]> {
 export async function GetUser(userId: string): Promise<IUserViewModel> {
     let user: IUserViewModel;
     try {
-        const response = await fetch(`https://b3utils.azurewebsites.net/api/v1/Users/${userId}`);
+        const response = await fetch(`${baseUrl}/api/v1/Users/${userId}`);
         user = await response.json();
     } catch (exception) {
         console.error(exception);
@@ -40,7 +50,7 @@ export async function GetUser(userId: string): Promise<IUserViewModel> {
 
 export async function AddActivity(activity: IActivityViewModel): Promise<void> {
     try {
-        const response = await fetch("https://b3utils.azurewebsites.net/api/v1/Activity", {
+        const response = await fetch(`${baseUrl}/api/v1/Activity`, {
             method: "POST",
             body: JSON.stringify(activity),
             headers: {
@@ -56,7 +66,7 @@ export async function AddActivity(activity: IActivityViewModel): Promise<void> {
 
 export async function AddUser(user: IUserViewModel): Promise<void> {
     try {
-        const response = await fetch("https://b3utils.azurewebsites.net/api/v1/Users/", {
+        const response = await fetch(`${baseUrl}/api/v1/Users/`, {
             method: "POST",
             body: JSON.stringify(user),
             headers: {

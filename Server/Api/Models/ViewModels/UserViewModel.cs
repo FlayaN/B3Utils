@@ -6,7 +6,7 @@ namespace Api.Models.ViewModels
     {
         public string UserId { get; set; }
         public string Name { get; set; }
-        public string LastRecordedDate { get; set; }
+        public DateTime LastRecordedDate { get; set; }
         public string AvatarUrl { get; set; }
         public double TotalDistance { get; set; }
     }

@@ -4,12 +4,13 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 
 // import {  } from "../components";
-import { Base } from "../modules";
+import { Base } from "../Modules";
 import { Pages } from "../Base/Constants";
 
 interface IStoreProps {
     name: string;
     avatarUrl: string;
+    fitnessInitialized: boolean;
 }
 
 interface IProps {
@@ -26,6 +27,11 @@ class MainMenu extends React.Component<IProps, {}> {
         console.log(this.props.store.avatarUrl);
         return (
             <View style={styles.container}>
+                <View>
+                    <Button
+                        color={"red"} title="Gå till loggen"
+                        onPress={() => { this.props.baseActions.navigate(Pages.EVENTLOG); }} />
+                </View>
                 {Platform.OS === "android" ?
                     <Text style={styles.instructions}>
                         Android
@@ -39,7 +45,10 @@ class MainMenu extends React.Component<IProps, {}> {
                     undefined}
                 <Text>{this.props.store.name}</Text>
                 <View>
-                    <Button color={"black"} title="Gå till fitness" onPress={() => { this.props.baseActions.navigate(Pages.FITNESS); }} />
+                    <Button
+                        disabled={!this.props.store.fitnessInitialized}
+                        color={"black"} title="Gå till fitness"
+                        onPress={() => { this.props.baseActions.navigate(Pages.FITNESS); }} />
                 </View>
             </View>
         );
@@ -66,7 +75,8 @@ function mapStateToProps(state: StoreDef): IProps {
     return {
         store: {
             name: state.user.googleUser.name,
-            avatarUrl: state.user.avatarUrl
+            avatarUrl: state.user.avatarUrl,
+            fitnessInitialized: state.fitness.initialized
         } as IStoreProps
     } as IProps;
 }

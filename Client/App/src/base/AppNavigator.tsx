@@ -3,17 +3,20 @@ import { connect } from "react-redux";
 import { addNavigationHelpers, StackNavigator, NavigationActions } from "react-navigation";
 
 import { Pages } from "./Constants";
-import { MainMenu, Fitness } from "../pages";
-import { User } from "../modules";
+import { MainMenu, Fitness as FitnessPage, EventLog } from "../Pages";
+import { User, Fitness, Base } from "../Modules";
 import { bindActionCreators } from "redux";
 
-import { BackHandler } from "react-native";
+import {
+    BackHandler
+} from "react-native";
 
 import { LoginWithGoogle, AddUser } from "./Utilities";
 
 export const AppNavigator = StackNavigator({
     [Pages.MAINMENU]: { screen: MainMenu },
-    [Pages.FITNESS]: { screen: Fitness }
+    [Pages.FITNESS]: { screen: FitnessPage },
+    [Pages.EVENTLOG]: { screen: EventLog }
 });
 
 import GoogleFit from "react-native-google-fit";
@@ -31,6 +34,8 @@ interface IProps {
     dispatch: Function;
     nav: INavObject;
     userActions: User.Actions.ActionsMap;
+    fitnessActions: Fitness.Actions.ActionsMap;
+    baseActions: Base.Actions.ActionsMap;
 }
 
 interface IState { }
@@ -40,33 +45,42 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
         return nav.index === 0;
     }
     async componentDidMount() {
+        try {
 
-        const user = await LoginWithGoogle();
 
-        this.props.userActions.setGoogleUser(user);
+            const user = await LoginWithGoogle();
 
-        const apiKey = "AIzaSyAPZSjHiCrZWnribMptYujn2UROI-vIku4";
+            this.props.userActions.setGoogleUser(user);
 
-        const response = await fetch(`https://www.googleapis.com/plus/v1/people/${this.props.store.userID}?fields=image&key=${apiKey}`);
-        const responseJson = await response.json();
-        this.props.userActions.setAvatar(responseJson.image.url);
+            const apiKey = "AIzaSyAPZSjHiCrZWnribMptYujn2UROI-vIku4";
 
-        await AddUser({
-            name: user.name,
-            avatarUrl: responseJson.image.url,
-            lastRecordedDate: new Date().toISOString(),
-            userId: user.userID,
-            totalDistance: 0
-        });
+            const response = await fetch(`https://www.googleapis.com/plus/v1/people/${this.props.store.userID}?fields=image&key=${apiKey}`);
+            const responseJson = await response.json();
+            this.props.baseActions.logInfo(`Image json: ${JSON.stringify(responseJson)}`);
+            this.props.userActions.setAvatar(responseJson.image.url);
 
-        await GoogleFit.authorizeFit();
-        await GoogleFit.onAuthorize((result) => {
-            console.log(result);
-        });
+            await AddUser({
+                name: user.name,
+                avatarUrl: responseJson.image.url,
+                lastRecordedDate: new Date().toISOString(),
+                userId: user.userID,
+                totalDistance: 0
+            });
 
-        await GoogleFit.observeSteps((step) => {
-            console.log(step);
-        });
+            await GoogleFit.authorizeFit();
+            await GoogleFit.onAuthorize((result) => {
+                this.props.baseActions.logInfo(`GoogleFit.onAuthorize: ${JSON.stringify(result)}`);
+            });
+
+            await GoogleFit.observeSteps((step) => {
+                this.props.baseActions.logInfo(`GoogleFit.observeSteps: ${JSON.stringify(step)}`);
+            });
+
+        } catch (error) {
+            this.props.baseActions.logError(`Error: ${error}`);
+        }
+
+        this.props.fitnessActions.setInitialized(true);
 
         BackHandler.addEventListener("hardwareBackPress", this.onBackPress);
     }
@@ -101,7 +115,9 @@ function mapStateToProps(state: StoreDef): IProps {
 
 function mapDispatchToProps(dispatch: any): IProps {
     return Object.assign({ dispatch: dispatch }, {
-        userActions: bindActionCreators(User.Actions.Actions, dispatch)
+        userActions: bindActionCreators(User.Actions.Actions, dispatch),
+        fitnessActions: bindActionCreators(Fitness.Actions.Actions, dispatch),
+        baseActions: bindActionCreators(Base.Actions.Actions, dispatch)
     } as IProps);
 }
 
