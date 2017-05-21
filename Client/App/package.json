@@ -12,11 +12,11 @@
     "lint": "tslint src/**/*.ts",
     "watch": "npm run build -- -w",
     "start:ios": "npm run build && concurrently -r \"npm run watch\" \"react-native run-ios\"",
-    "start:android": "npm run clean:android && npm run build && concurrently -r \"npm run watch\" \"react-native run-android\""
+    "start:android": "npm run build && concurrently -r \"npm run watch\" \"react-native run-android\""
   },
   "dependencies": {
-    "react": "16.0.0-alpha.6",
-    "react-native": "0.44.0",
+    "react": "16.0.0-alpha.3",
+    "react-native": "^0.44.0",
     "react-native-code-push": "^2.0.3-beta",
     "react-native-google-fit": "^0.2.0",
     "react-native-google-sign-in": "0.0.14",
@@ -41,7 +41,7 @@
     "concurrently": "^3.4.0",
     "jest": "20.0.1",
     "react-native-cli": "^2.0.1",
-    "react-test-renderer": "16.0.0-alpha.6",
+    "react-test-renderer": "16.0.0-alpha.3",
     "remote-redux-devtools": "^0.5.10",
     "rimraf": "^2.6.1",
     "tslint": "^5.2.0",

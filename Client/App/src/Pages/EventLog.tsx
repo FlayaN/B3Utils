@@ -21,7 +21,7 @@ interface IProps {
     store: IStoreProps;
 }
 
-class TestPage extends React.Component<IProps, {}> {
+class EventLog extends React.Component<IProps, {}> {
     static navigationOptions = {
         title: "EventLog"
     };
@@ -70,4 +70,4 @@ function mapStateToProps(state: StoreDef): IProps {
     } as IProps;
 }
 
-export default connect(mapStateToProps)(TestPage);
+export default connect(mapStateToProps)(EventLog);

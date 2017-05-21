@@ -31,7 +31,7 @@ interface IProps {
     fitnessActions: Fitness.Actions.ActionsMap;
 }
 
-class TestPage extends React.Component<IProps, {}> {
+class FitnessPage extends React.Component<IProps, {}> {
     static navigationOptions = {
         title: "Fitness"
     };
@@ -127,4 +127,4 @@ function mapDispatchToProps(dispatch): IProps {
     } as IProps;
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TestPage);
+export default connect(mapStateToProps, mapDispatchToProps)(FitnessPage);
