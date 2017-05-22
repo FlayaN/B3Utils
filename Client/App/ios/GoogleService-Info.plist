@@ -3,13 +3,13 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>509942424685-7qt4q1gpu3tci13td2bjqkcqmm6ot90i.apps.googleusercontent.com</string>
+	<string>509942424685-tagpmt073eq8bvnpgqflr431a3vsr49h.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.509942424685-7qt4q1gpu3tci13td2bjqkcqmm6ot90i</string>
+	<string>com.googleusercontent.apps.509942424685-tagpmt073eq8bvnpgqflr431a3vsr49h</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>org.hannes.b3it.B3Utils</string>
+	<string>org.hannes.btreit.BtreUtils</string>
 	<key>PROJECT_ID</key>
 	<string>b3utils-test</string>
 	<key>IS_ADS_ENABLED</key>
@@ -23,6 +23,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:509942424685:ios:c70b9a77c8ee23bc</string>
+	<string>1:509942424685:ios:2ce8c2f5fe389492</string>
 </dict>
 </plist>

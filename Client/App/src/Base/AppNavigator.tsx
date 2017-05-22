@@ -75,7 +75,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
 
         return new Promise((resolve, reject) => {
             AppleHealthKit.initHealthKit(options, (err, res) => {
-                if(err) {
+                if (err) {
                     reject(err);
                     this.props.baseActions.logError(`AppleHealthKit.initHealthKit: ${JSON.stringify(res)}`);
                     return;
@@ -109,10 +109,9 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 userId: user.userID,
                 totalDistance: 0
             });
-            if(Platform.OS === "ios") {
+            if (Platform.OS === "ios") {
                 await this.initAppleHealth();
-            }
-            else {
+            } else {
                 await this.initGoogleFit();
             }
         } catch (error) {

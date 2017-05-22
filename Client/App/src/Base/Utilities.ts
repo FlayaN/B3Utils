@@ -4,8 +4,8 @@ import { Platform } from "react-native";
 export async function LoginWithGoogle(): Promise<GoogleUser> {
     let clientId = "509942424685-ojd84ecu7eobre41dqp504arseomtdtk.apps.googleusercontent.com";
 
-    if(Platform.OS === "ios") {
-        clientId = "509942424685-7qt4q1gpu3tci13td2bjqkcqmm6ot90i.apps.googleusercontent.com";
+    if (Platform.OS === "ios") {
+        clientId = "509942424685-tagpmt073eq8bvnpgqflr431a3vsr49h.apps.googleusercontent.com";
     }
 
     try {
