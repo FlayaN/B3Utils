@@ -8,8 +8,8 @@ import {
     SectionList,
     Image,
     StyleSheet,
-    Button,
-    TouchableOpacity
+    TouchableOpacity,
+    RefreshControl
 } from "react-native";
 
 import { Fitness, Base } from "../Modules";
@@ -34,17 +34,25 @@ interface IProps {
     baseActions: Base.Actions.ActionsMap;
 }
 
-class FitnessPage extends React.Component<IProps, {}> {
+interface IState {
+    refreshing: boolean;
+}
+
+class FitnessPage extends React.Component<IProps, IState> {
     static navigationOptions = {
         title: "Fitness"
     };
     constructor(props: IProps) {
         super(props);
         this.updateData = this.updateData.bind(this);
+        this.state = {
+            refreshing: false
+        };
     }
     async updateData() {
+        this.setState({ refreshing: true });
         this.props.fitnessActions.setUsers(await GetUsers());
-
+        this.setState({ refreshing: false });
         const currUser = await GetUser(this.props.store.userID);
 
         let startDate = new Date(currUser.lastRecordedDate);
@@ -59,11 +67,14 @@ class FitnessPage extends React.Component<IProps, {}> {
         }, (data, extra) => {
             if (data === false) {
                 extra.forEach(item => {
+                    console.log("DailyDistSample", item);
+                    let tmpDate = new Date(item.endDate);
+                    tmpDate.setHours(tmpDate.getHours() + 2);
                     AddActivity({
-                        activityId: "",
+                        activityId: "00000000-0000-0000-0000-000000000000",
                         userId: this.props.store.userID,
                         amount: item.distance,
-                        date: item.endDate,
+                        date: tmpDate,
                         type: "getDailyDistanceSamples"
                     });
                 });
@@ -77,13 +88,13 @@ class FitnessPage extends React.Component<IProps, {}> {
         let { users } = this.props.store;
         users = users.map(item => { return { ...item, key: item.userId }; });
         return (
-            <View style={{flex: 1}}>
-                <Button title="Refresh" onPress={this.updateData} />
-                <Text>
+            <View style={{ flex: 1 }}>
+                <Text style={styles.column}>
                     User: {this.props.store.email}
                 </Text>
                 <SectionList
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
+                    refreshControl={<RefreshControl onRefresh={this.updateData} refreshing={this.state.refreshing} />}
                     renderItem={(item: IListItem) => (
                         <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS_USER, params: item.item }); }}>
                             <View style={styles.itemRow}>

@@ -11,7 +11,6 @@ namespace Api.Infrastructure
             CreateMap<User, UserViewModel>();
             CreateMap<UserViewModel, User>();
             CreateMap<Activity, ActivityViewModel>();
-            CreateMap<ActivityViewModel, Activity>();
         }
     }
 }

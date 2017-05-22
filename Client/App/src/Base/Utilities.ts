@@ -21,8 +21,8 @@ export function update<T, K extends keyof T>(obj: T, updateSpec: Pick<T, K>): T 
   return result;
 }
 
-const baseUrl = "https://b3utils.azurewebsites.net";
-// const baseUrl = "http://localhost:57603";
+ const baseUrl = "https://b3utils.azurewebsites.net";
+// const baseUrl = "http://192.168.1.198:57603";
 
 export async function GetUsers(): Promise<IUserViewModel[]> {
     let users: IUserViewModel[];
@@ -50,6 +50,7 @@ export async function GetUser(userId: string): Promise<IUserViewModel> {
 
 export async function AddActivity(activity: IActivityViewModel): Promise<void> {
     try {
+        console.log("AddActivity", activity);
         const response = await fetch(`${baseUrl}/api/v1/Activity`, {
             method: "POST",
             body: JSON.stringify(activity),

@@ -23,6 +23,7 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Add([FromBody]ActivityViewModel activity)
         {
+            //activity.Date.AddHours(2);
             var user = _context.Users
                 .Include(x => x.Activities)
                 .FirstOrDefault(x => x.UserId == activity.UserId);
@@ -36,11 +37,17 @@ namespace Api.Controllers
                 var existing = user.Activities.FirstOrDefault(x => x.Date.Date == activity.Date.Date);
                 if (existing == null)
                 {
-                    user.Activities.Add(Mapper.Map<Activity>(activity));
+                    user.Activities.Add(new Activity {
+                        Amount = activity.Amount,
+                        Date = activity.Date,
+                        Type = activity.Type,
+                        UserId = activity.UserId
+                    });
                 }
                 else
                 {
-                    Mapper.Map(activity, existing); //Update entry with new day data
+                    existing.Date = activity.Date;
+                    existing.Amount = activity.Amount;
                 }
 
                 user.TotalDistance = user.Activities.Sum(x => x.Amount);
