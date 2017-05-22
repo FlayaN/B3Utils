@@ -1,0 +1,6 @@
+framework module Pods_B3UtilsTests {
+  umbrella header "Pods-B3UtilsTests-umbrella.h"
+
+  export *
+  module * { export * }
+}

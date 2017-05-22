@@ -1,6 +1,13 @@
 import GoogleSignIn from "react-native-google-sign-in";
+import { Platform } from "react-native";
+
 export async function LoginWithGoogle(): Promise<GoogleUser> {
     let clientId = "509942424685-ojd84ecu7eobre41dqp504arseomtdtk.apps.googleusercontent.com";
+
+    if(Platform.OS === "ios") {
+        clientId = "509942424685-7qt4q1gpu3tci13td2bjqkcqmm6ot90i.apps.googleusercontent.com";
+    }
+
     try {
         await GoogleSignIn.configure({
             clientID: clientId,
