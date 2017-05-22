@@ -1,9 +1,13 @@
 import React from "react";
-import { View, Text, StyleSheet, Platform, Button, Image } from "react-native";
+import {
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    View
+} from "react-native";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-
-// import {  } from "../components";
 import { Base } from "../Modules";
 import { Pages } from "../Base/Constants";
 
@@ -19,34 +23,22 @@ interface IProps {
 }
 
 class MainMenu extends React.Component<IProps, {}> {
-    static navigationOptions = {
-        title: "B3Utils"
-    };
     render() {
         return (
-            <View style={styles.container}>
-                <View>
-                    <Button
-                        color={"red"} title="Gå till loggen"
-                        onPress={() => { this.props.baseActions.navigate({to: Pages.EVENTLOG}); }} />
-                </View>
-                {Platform.OS === "android" ?
-                    <Text style={styles.instructions}>
-                        Android
-                    </Text> :
-                    <Text style={styles.instructions}>
-                        IOS
-                    </Text>
-                }
-                {this.props.store.avatarUrl !== "" ?
-                    <Image style={{ width: 50, height: 50 }} source={{ uri: this.props.store.avatarUrl }} /> :
-                    undefined}
-                <Text>{this.props.store.name}</Text>
-                <View>
-                    <Button
+            <View style={styles.root}>
+                <View style={styles.healthContainer}>
+                    <TouchableOpacity
+                        style={styles.healthButton}
                         disabled={!this.props.store.fitnessInitialized}
-                        color={"black"} title="Gå till fitness"
-                        onPress={() => { this.props.baseActions.navigate({to: Pages.FITNESS}); }} />
+                        onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS }); }} >
+                        <Text style={{ fontSize: 25, fontWeight: "bold" }}>Hälsa</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.imageContainer}>
+                    {this.props.store.avatarUrl !== "" ?
+                        <Image style={{ width: 70, height: 70 }} source={{ uri: this.props.store.avatarUrl }} /> :
+                        undefined}
+                    <Text style={{ fontSize: 25, fontWeight: "bold" }}>{this.props.store.name}</Text>
                 </View>
             </View>
         );
@@ -54,18 +46,22 @@ class MainMenu extends React.Component<IProps, {}> {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    imageContainer: {
+        flex: 2,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    healthButton: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#F5FCFF"
+        alignItems: "center"
     },
-
-    instructions: {
-        textAlign: "center",
-        color: "#333333",
-        marginBottom: 50,
-        marginTop: 10
+    healthContainer: {
+        flex: 1,
+        backgroundColor: "skyblue"
+    },
+    root: {
+        flex: 1
     }
 });
 

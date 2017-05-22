@@ -31,9 +31,6 @@ interface IProps {
 }
 
 class FitnessUser extends React.Component<IProps, {}> {
-    static navigationOptions = {
-        title: "Aktiviteter"
-    };
     constructor(props: IProps) {
         super(props);
         this.updateData = this.updateData.bind(this);
@@ -53,7 +50,6 @@ class FitnessUser extends React.Component<IProps, {}> {
         }
         return (
             <View>
-                <Text>{this.props.navigation.state.params.name}</Text>
                 {this.props.store.activities &&
                     <SectionList
                         renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}

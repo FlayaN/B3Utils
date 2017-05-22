@@ -22,9 +22,6 @@ interface IProps {
 }
 
 class EventLog extends React.Component<IProps, {}> {
-    static navigationOptions = {
-        title: "EventLog"
-    };
     constructor(props: IProps) {
         super(props);
     }

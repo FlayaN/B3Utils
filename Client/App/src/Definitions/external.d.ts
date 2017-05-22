@@ -1,7 +1,7 @@
 interface GoogleUser {
     accessToken: string;
     email: string;
-    familyName: string,
+    familyName: string;
     givenName: string;
     idToken: string;
     name: string;

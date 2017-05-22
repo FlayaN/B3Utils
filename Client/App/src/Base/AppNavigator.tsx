@@ -1,9 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
-import { addNavigationHelpers, StackNavigator, NavigationActions } from "react-navigation";
-
-import { Pages } from "./Constants";
-import { MainMenu, Fitness as FitnessPage, EventLog, FitnessUser } from "../Pages";
+import { addNavigationHelpers, NavigationActions } from "react-navigation";
 import { User, Fitness, Base } from "../Modules";
 import { bindActionCreators } from "redux";
 
@@ -14,15 +11,7 @@ import {
 
 import { LoginWithGoogle, AddUser } from "./Utilities";
 
-export const AppNavigator = StackNavigator({
-    [Pages.MAINMENU]: { screen: MainMenu },
-    [Pages.FITNESS]: { screen: FitnessPage },
-    [Pages.EVENTLOG]: { screen: EventLog },
-    [Pages.FITNESS_USER]: {
-        screen: FitnessUser,
-        path: "fitness/:id"
-    }
-});
+import { StackNav } from "./Router";
 
 import GoogleFit from "react-native-google-fit";
 import AppleHealthKit from "react-native-apple-healthkit";
@@ -136,7 +125,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
     render() {
         const { dispatch, nav } = this.props;
         return (
-            <AppNavigator navigation={addNavigationHelpers({ dispatch, state: nav })} />
+            <StackNav navigation={addNavigationHelpers({ dispatch, state: nav })} />
         );
     }
 }

@@ -29,7 +29,7 @@ export function addDays(date: Date, days: number): Date {
 export function getDates(startDate: Date, endDate: Date): Array<Date> {
     let dateArray = new Array<Date>();
     let currDate = startDate;
-    while(currDate <= endDate) {
+    while (currDate <= endDate) {
         dateArray.push(new Date(currDate));
         currDate = addDays(currDate, 1);
     }

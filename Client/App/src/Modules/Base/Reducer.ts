@@ -1,7 +1,7 @@
 import { handleActions } from "redux-actions";
 import { ActionTypes } from "./Constants";
 
-import { AppNavigator } from "../../Base/AppNavigator";
+import { StackNav } from "../../Base/Router";
 import { NavigationActions } from "react-navigation";
 import { update } from "../../Base/Utilities";
 
@@ -41,7 +41,7 @@ const Reducer = handleActions({
 }, {});
 
 function updateStateWithNewNavData(action: any, state: BaseDef): BaseDef {
-    const nextState = AppNavigator.router.getStateForAction(action, state.navData);
+    const nextState = StackNav.router.getStateForAction(action, state.navData);
     return update(state, { navData: nextState });
 }
 

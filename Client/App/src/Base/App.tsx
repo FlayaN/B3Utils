@@ -3,10 +3,13 @@ import { Provider } from "react-redux";
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import thunk from "redux-thunk";
 
-import AppWithNavigationState, { AppNavigator } from "./AppNavigator";
+import { StackNav, TabNav } from "./Router";
 
 import { User, Base, Fitness } from "../Modules";
-import { Pages, Modules } from "./Constants";
+import {
+    Pages,
+    Modules
+} from "./Constants";
 
 import { composeWithDevTools } from "remote-redux-devtools";
 
@@ -24,8 +27,8 @@ const rootReducer = combineReducers<StoreDef>({
     [Modules.fitness]: Fitness.Reducer
 });
 
-const firstAction = AppNavigator.router.getActionForPathAndParams(Pages.MAINMENU);
-const tempNavState = AppNavigator.router.getStateForAction(firstAction);
+const firstAction = StackNav.router.getActionForPathAndParams(Pages.MAINMENU);
+const tempNavState = StackNav.router.getStateForAction(firstAction);
 
 const defaultStore: StoreDef = {
     user: {
@@ -72,7 +75,7 @@ class App extends React.Component<{}, {}> {
     render() {
         return (
             <Provider store={store}>
-                <AppWithNavigationState />
+                <TabNav />
             </Provider>
         );
     }

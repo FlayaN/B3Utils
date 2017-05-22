@@ -41,9 +41,6 @@ interface IState {
 }
 
 class FitnessPage extends React.Component<IProps, IState> {
-    static navigationOptions = {
-        title: "Fitness"
-    };
     constructor(props: IProps) {
         super(props);
         this.updateData = this.updateData.bind(this);
@@ -55,22 +52,20 @@ class FitnessPage extends React.Component<IProps, IState> {
     getDistances(startDate: Date, endDate: Date): Promise<IActivityViewModel[]> {
         return new Promise((resolve, reject) => {
             let activities: IActivityViewModel[] = [];
-            if(Platform.OS === "ios") {
+            if (Platform.OS === "ios") {
                 getDates(startDate, endDate).forEach(date => {
                     const options = {
                         date: date
                     };
                     AppleHealthKit.getDistanceWalkingRunning(options, (err, res) => {
-                        if(err) {
+                        if (err) {
                             reject(err);
-                        }
-                        else {
+                        } else {
                             this.props.baseActions.logInfo(`getDistanceWalkingRunning: ${res}`);
                         }
-                    })
+                    });
                 });
-            }
-            else {
+            } else {
                 GoogleFit.getDailyDistanceSamples({
                 startDate: startDate.toISOString(),
                 endDate: endDate.toISOString()
@@ -88,11 +83,11 @@ class FitnessPage extends React.Component<IProps, IState> {
                             type: "getDailyDistanceSamples"
                         });
                     });
+                    resolve(activities);
                 } else {
                     reject(data);
                 }
             });
-            resolve(activities);
         }});
     }
     async updateData() {
@@ -107,13 +102,13 @@ class FitnessPage extends React.Component<IProps, IState> {
             endDate.setHours(23, 59, 59, 999);
 
             const activities = await this.getDistances(startDate, endDate);
+            console.log(activities);
             await activities.forEach(async (activity) => {
                 await AddActivity(activity);
             });
 
             this.props.fitnessActions.setUsers(await GetUsers());
-        }
-        catch(error) {
+        } catch (error) {
             this.props.baseActions.logError(error);
         }
         this.setState({ refreshing: false });
