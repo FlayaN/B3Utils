@@ -18,6 +18,7 @@
     "dateformat": "^2.0.0",
     "react": "16.0.0-alpha.6",
     "react-native": "^0.44.0",
+    "react-native-apple-healthkit": "^0.2.1",
     "react-native-code-push": "^2.0.3-beta",
     "react-native-google-fit": "^0.2.0",
     "react-native-google-sign-in": "0.0.14",

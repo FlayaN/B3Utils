@@ -9,13 +9,15 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
-    RefreshControl
+    RefreshControl,
+    Platform
 } from "react-native";
 
 import { Fitness, Base } from "../Modules";
-import { GetUsers, GetUser, AddActivity } from "../Base/Utilities";
+import { GetUsers, GetUser, AddActivity, getDates } from "../Base/Utilities";
 import { Pages } from "../Base/Constants";
 import GoogleFit from "react-native-google-fit";
+import AppleHealthKit from "react-native-apple-healthkit";
 
 interface IStoreProps {
     email: string;
@@ -45,41 +47,76 @@ class FitnessPage extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.updateData = this.updateData.bind(this);
+        this.getDistances = this.getDistances.bind(this);
         this.state = {
             refreshing: false
         };
     }
-    async updateData() {
-        this.setState({ refreshing: true });
-        this.props.fitnessActions.setUsers(await GetUsers());
-        this.setState({ refreshing: false });
-        const currUser = await GetUser(this.props.store.userID);
-
-        let startDate = new Date(currUser.lastRecordedDate);
-        startDate.setHours(0, 0, 0, 0);
-
-        let endDate = new Date();
-        endDate.setHours(23, 59, 59, 999);
-
-        GoogleFit.getDailyDistanceSamples({
-            startDate: startDate.toISOString(),
-            endDate: endDate.toISOString()
-        }, (data, extra) => {
-            if (data === false) {
-                extra.forEach(item => {
-                    console.log("DailyDistSample", item);
-                    let tmpDate = new Date(item.endDate);
-                    tmpDate.setHours(tmpDate.getHours() + 2);
-                    AddActivity({
-                        activityId: "00000000-0000-0000-0000-000000000000",
-                        userId: this.props.store.userID,
-                        amount: item.distance,
-                        date: tmpDate,
-                        type: "getDailyDistanceSamples"
-                    });
+    getDistances(startDate: Date, endDate: Date): Promise<IActivityViewModel[]> {
+        return new Promise((resolve, reject) => {
+            let activities: IActivityViewModel[] = [];
+            if(Platform.OS === "ios") {
+                getDates(startDate, endDate).forEach(date => {
+                    const options = {
+                        date: date
+                    };
+                    AppleHealthKit.getDistanceWalkingRunning(options, (err, res) => {
+                        if(err) {
+                            reject(err);
+                        }
+                        else {
+                            this.props.baseActions.logInfo(`getDistanceWalkingRunning: ${res}`);
+                        }
+                    })
                 });
             }
-        });
+            else {
+                GoogleFit.getDailyDistanceSamples({
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString()
+            }, (data, extra) => {
+                if (data === false) {
+                    extra.forEach(item => {
+                        console.log("DailyDistSample", item);
+                        let tmpDate = new Date(item.endDate);
+                        tmpDate.setHours(tmpDate.getHours() + 2);
+                        activities.push({
+                            activityId: "00000000-0000-0000-0000-000000000000",
+                            userId: this.props.store.userID,
+                            amount: item.distance,
+                            date: tmpDate,
+                            type: "getDailyDistanceSamples"
+                        });
+                    });
+                } else {
+                    reject(data);
+                }
+            });
+            resolve(activities);
+        }});
+    }
+    async updateData() {
+        try {
+            this.setState({ refreshing: true });
+            const currUser = await GetUser(this.props.store.userID);
+
+            let startDate = new Date(currUser.lastRecordedDate);
+            startDate.setHours(0, 0, 0, 0);
+
+            let endDate = new Date();
+            endDate.setHours(23, 59, 59, 999);
+
+            const activities = await this.getDistances(startDate, endDate);
+            await activities.forEach(async (activity) => {
+                await AddActivity(activity);
+            });
+
+            this.props.fitnessActions.setUsers(await GetUsers());
+        }
+        catch(error) {
+            this.props.baseActions.logError(error);
+        }
+        this.setState({ refreshing: false });
     }
     async componentDidMount() {
         await this.updateData();

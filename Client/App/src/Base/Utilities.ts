@@ -21,6 +21,21 @@ export async function LoginWithGoogle(): Promise<GoogleUser> {
     }
 }
 
+export function addDays(date: Date, days: number): Date {
+    date.setDate(date.getDate() + days);
+    return date;
+}
+
+export function getDates(startDate: Date, endDate: Date): Array<Date> {
+    let dateArray = new Array<Date>();
+    let currDate = startDate;
+    while(currDate <= endDate) {
+        dateArray.push(new Date(currDate));
+        currDate = addDays(currDate, 1);
+    }
+    return dateArray;
+}
+
 export function update<T, K extends keyof T>(obj: T, updateSpec: Pick<T, K>): T {
   const result = {} as T;
   Object.keys(obj).forEach(key => result[key] = obj[key]);
