@@ -23,6 +23,15 @@ OR
 npm run start:android
 ```
 
+#### Deploy app
+Deploy the app to staging
+```
+code-push login // Hannes needs to add you as contributor
+npm run build // Make sure the typescript is compiled
+code-push release-react B3Utils-android android
+code-push release-react B3Utils-ios ios
+```
+
 ## Server
 
 Made using dot.net core 2.0

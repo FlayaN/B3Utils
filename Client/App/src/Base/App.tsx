@@ -13,7 +13,7 @@ import {
 
 import { composeWithDevTools } from "remote-redux-devtools";
 
-// import codePush from "react-native-code-push";
+import codePush from "react-native-code-push";
 
 const middeWares = [
     thunk
@@ -69,9 +69,11 @@ if (module.hot) {
 }
 
 class App extends React.Component<{}, {}> {
-    async componentDidMount() {
+    componentDidMount() {
         // Download update
-        // codePush.sync();
+        codePush.sync({
+            installMode: codePush.InstallMode.IMMEDIATE
+        });
     }
     render() {
         return (
@@ -82,5 +84,4 @@ class App extends React.Component<{}, {}> {
     }
 }
 
-// export default codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME })(App);
-export default App;
+export default codePush({ checkFrequency: codePush.CheckFrequency.MANUAL })(App);

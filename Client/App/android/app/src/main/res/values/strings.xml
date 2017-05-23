@@ -1,3 +1,4 @@
 <resources>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">JRTOn34Hp4NXR_Li1Rz4pWTVchIw4yb7euevG</string>
     <string name="app_name">B3Utils</string>
 </resources>
