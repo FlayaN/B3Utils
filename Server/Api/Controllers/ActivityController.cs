@@ -34,7 +34,7 @@ namespace Api.Controllers
                     user.Activities = new List<Activity>();
                 }
 
-                var existing = user.Activities.FirstOrDefault(x => x.Date.Date == activity.Date.Date);
+                var existing = user.Activities.FirstOrDefault(x => x.Date.Date == activity.Date.Date && x.Type == activity.Type);
                 if (existing == null)
                 {
                     user.Activities.Add(new Activity {
@@ -50,7 +50,8 @@ namespace Api.Controllers
                     existing.Amount = activity.Amount;
                 }
 
-                user.TotalDistance = user.Activities.Sum(x => x.Amount);
+                user.TotalDistance = user.Activities.Where(x => x.Type == "getDailyDistanceSamples").Sum(x => x.Amount);
+                user.TotalSteps = user.Activities.Where(x => x.Type == "getDailyStepCountSamples").Sum(x => x.Amount);
                 user.LastRecordedDate = activity.Date.Date;
                 await _context.SaveChangesAsync();
                 return Ok();

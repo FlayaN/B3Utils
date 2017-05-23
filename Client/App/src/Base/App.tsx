@@ -53,7 +53,8 @@ const defaultStore: StoreDef = {
     fitness: {
         users: [],
         initialized: false,
-        activitiesData: {}
+        activitiesData: {},
+        selectedFitnessMode: "Avstånd"
     }
 };
 

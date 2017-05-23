@@ -14,6 +14,9 @@ const Reducer = handleActions({
         existing[action.data.userId] = action.data.activities;
 
         return update(state, { activitiesData: existing });
+    },
+    [ActionTypes.SET_SELECTED_FITNESS_MODE]: (state: FitnessDef, action: Action<string>) => {
+        return update(state, { selectedFitnessMode: action.data });
     }
 }, {});
 

@@ -96,7 +96,8 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 avatarUrl: imageUrl,
                 lastRecordedDate: new Date().toISOString(),
                 userId: user.userID,
-                totalDistance: 0
+                totalDistance: 0,
+                totalSteps: 0
             });
             if (Platform.OS === "ios") {
                 await this.initAppleHealth();

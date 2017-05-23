@@ -9,5 +9,6 @@ namespace Api.Models.ViewModels
         public DateTime LastRecordedDate { get; set; }
         public string AvatarUrl { get; set; }
         public double TotalDistance { get; set; }
+        public double TotalSteps { get; set; }
     }
 }

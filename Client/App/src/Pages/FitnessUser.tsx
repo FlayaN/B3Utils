@@ -17,6 +17,7 @@ import { Fitness } from "../Modules";
 
 interface IStoreProps {
     activities: IActivityViewModel[];
+    fitnessMode: string;
 }
 
 interface IListItem {
@@ -37,7 +38,8 @@ class FitnessUser extends React.Component<IProps, {}> {
     }
     async updateData() {
         const userId = this.props.navigation.state.params.userId;
-        const activities = await GetActivities(userId);
+        const correctType = this.props.store.fitnessMode === "Steg" ? "getDailyStepCountSamples" : "getDailyDistanceSamples";
+        const activities = await GetActivities(userId, correctType);
         this.props.fitnessActions.setUserActivities({ userId: userId, activities: activities });
     }
     async componentDidMount() {
@@ -56,7 +58,9 @@ class FitnessUser extends React.Component<IProps, {}> {
                         renderItem={(item: IListItem) => (
                             <View style={styles.itemRow}>
                                 <Text style={styles.column}>{dateFormat(item.item.date, "yyyy-mm-dd dddd")}</Text>
-                                <Text style={styles.column}>{(item.item.amount / 1000).toFixed(2)}km</Text>
+                                {this.props.store.fitnessMode === "Avstånd" ?
+                                    <Text style={styles.column}>{(item.item.amount / 1000).toFixed(2)}km</Text> :
+                                    <Text style={styles.column}>{item.item.amount}</Text>}
                             </View>
                         )}
                         sections={[
@@ -89,7 +93,8 @@ function mapStateToProps(state: StoreDef, ownProps: IProps): IProps {
             email: state.user.googleUser.email,
             users: state.fitness.users,
             userID: state.user.googleUser.userID,
-            activities: state.fitness.activitiesData[ownProps.navigation.state.params.userId]
+            activities: state.fitness.activitiesData[ownProps.navigation.state.params.userId],
+            fitnessMode: state.fitness.selectedFitnessMode
         } as IStoreProps
     } as IProps;
 }

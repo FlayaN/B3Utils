@@ -5,6 +5,7 @@ export interface ActionsMap extends ActionCreatorsMapObject {
     setUsers(users: IUserViewModel[]): Action<IUserViewModel[]>;
     setInitialized(initialized: boolean): Action<boolean>;
     setUserActivities(userActivities: UserActivities): Action<UserActivities>;
+    setSelectedFitnessMode(selectedFitnessMode: string): Action<string>;
 }
 
 export const Actions: ActionsMap = {
@@ -24,6 +25,12 @@ export const Actions: ActionsMap = {
         return {
             type: ActionTypes.SET_ACTIVITIES,
             data: userActivities
+        };
+    },
+    setSelectedFitnessMode: (selectedFitnessMode: string): Action<string> => {
+        return {
+            type: ActionTypes.SET_SELECTED_FITNESS_MODE,
+            data: selectedFitnessMode
         };
     }
 };

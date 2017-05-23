@@ -36,7 +36,7 @@ namespace Api.Models.Database
         public DateTime LastRecordedDate { get; set; }
         public string AvatarUrl { get; set; }
         public double TotalDistance { get; set; }
-
+        public double TotalSteps { get; set; }
         public List<Activity> Activities { get; set; }
     }
 

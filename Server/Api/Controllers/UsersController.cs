@@ -26,34 +26,58 @@ namespace Api.Controllers
             return new ObjectResult(user);
         }
 
-        [HttpGet("{userId}/activities")]
-        public IActionResult Activities(string userId)
+        [HttpGet("{userId}/activities/{type?}")]
+        public IActionResult Activities(string userId, string type = "getDailyDistanceSamples")
         {
             var user = _context.Users
                 .Include(x => x.Activities)
                 .FirstOrDefault(x => x.UserId == userId);
-            if(user != null)
+            if (user != null)
             {
-                var activities = user.Activities.Select(Mapper.Map<ActivityViewModel>).OrderByDescending(x => x.Date).ToList();
+                var activities = user.Activities.Where(x => x.Type == type).Select(Mapper.Map<ActivityViewModel>).OrderByDescending(x => x.Date).ToList();
                 return new ObjectResult(activities);
             }
             return NotFound();
         }
 
+        [HttpGet("all/{type}")]
+        public IActionResult GetUsers(string type)
+        {
+            List<UserViewModel> users;
+            var usersQuery = _context.Users.Select(Mapper.Map<UserViewModel>);
+            if (type == "getDailyDistanceSamples")
+            {
+                users = usersQuery.OrderByDescending(x => x.TotalDistance).ToList();
+            }
+            else
+            {
+                users = usersQuery.OrderByDescending(x => x.TotalSteps).ToList();
+            }
+            return new ObjectResult(users);
+        }
+
+        /// <summary>
+        /// REMOVE ME SOON
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         [HttpGet("")]
         public IActionResult GetUsers()
         {
-            var users = _context.Users.Select(Mapper.Map<UserViewModel>).OrderByDescending(x => x.TotalDistance).ToList();
-            return new ObjectResult(users);
+            return GetUsers("getDailyDistanceSamples");
         }
 
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody]UserViewModel user)
         {
-            user.TotalDistance = 0;
-            await _context.Users.AddAsync(Mapper.Map<User>(user));
-            await _context.SaveChangesAsync();
-            return Ok();
+            var existing = _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId);
+            if (existing == null)
+            {
+                await _context.Users.AddAsync(Mapper.Map<User>(user));
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return Ok("User already exists");
         }
 
         [HttpPut("")]

@@ -9,20 +9,19 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
-    RefreshControl,
-    Platform
+    RefreshControl
 } from "react-native";
 
 import { Fitness, Base } from "../Modules";
-import { GetUsers, GetUser, AddActivity, getDates } from "../Base/Utilities";
+import { GetUsers, GetUser, AddActivity, addHours, getDailyDistance, getDailySteps } from "../Base/Utilities";
 import { Pages } from "../Base/Constants";
-import GoogleFit from "react-native-google-fit";
-import AppleHealthKit from "react-native-apple-healthkit";
+import { SegmentedControls } from "react-native-radio-buttons";
 
 interface IStoreProps {
     email: string;
     users: IUserViewModel[];
     userID: string;
+    fitnessMode: string;
 }
 
 interface IListItem {
@@ -44,100 +43,75 @@ class FitnessPage extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.updateData = this.updateData.bind(this);
-        this.getDistances = this.getDistances.bind(this);
         this.state = {
             refreshing: false
         };
     }
-    getDistances(startDate: Date, endDate: Date): Promise<IActivityViewModel[]> {
-        return new Promise((resolve, reject) => {
-            let activities: IActivityViewModel[] = [];
-            if (Platform.OS === "ios") {
-                getDates(startDate, endDate).forEach(date => {
-                    const options = {
-                        date: date
-                    };
-                    AppleHealthKit.getDistanceWalkingRunning(options, (err, res) => {
-                        if (err) {
-                            reject(err);
-                        } else {
-                            this.props.baseActions.logInfo(`getDistanceWalkingRunning: ${res}`);
-                        }
-                    });
-                });
-            } else {
-                GoogleFit.getDailyDistanceSamples({
-                startDate: startDate.toISOString(),
-                endDate: endDate.toISOString()
-            }, (data, extra) => {
-                if (data === false) {
-                    extra.forEach(item => {
-                        console.log("DailyDistSample", item);
-                        let tmpDate = new Date(item.endDate);
-                        tmpDate.setHours(tmpDate.getHours() + 2);
-                        activities.push({
-                            activityId: "00000000-0000-0000-0000-000000000000",
-                            userId: this.props.store.userID,
-                            amount: item.distance,
-                            date: tmpDate,
-                            type: "getDailyDistanceSamples"
-                        });
-                    });
-                    resolve(activities);
-                } else {
-                    reject(data);
-                }
-            });
-        }});
-    }
-    async updateData() {
+    async updateData(type) {
         try {
             this.setState({ refreshing: true });
             const currUser = await GetUser(this.props.store.userID);
 
             let startDate = new Date(currUser.lastRecordedDate);
-            startDate.setHours(0, 0, 0, 0);
+            startDate.setHours(2, 0, 0, 0);
 
             let endDate = new Date();
             endDate.setHours(23, 59, 59, 999);
+            endDate = addHours(endDate, 2);
 
-            const activities = await this.getDistances(startDate, endDate);
-            console.log(activities);
+            let activities = await getDailyDistance(startDate, endDate, this.props.store.userID);
+            activities = activities.concat(await getDailySteps(startDate, endDate, this.props.store.userID));
             await activities.forEach(async (activity) => {
                 await AddActivity(activity);
             });
-
-            this.props.fitnessActions.setUsers(await GetUsers());
+            const correctType = type === "Steg" ? "getDailyStepCountSamples" : "getDailyDistanceSamples";
+            this.props.fitnessActions.setUsers(await GetUsers(correctType));
         } catch (error) {
             this.props.baseActions.logError(error);
         }
         this.setState({ refreshing: false });
     }
     async componentDidMount() {
-        await this.updateData();
+        await this.updateData(this.props.store.fitnessMode);
+    }
+    renderOption(option, selected) {
+        const style = selected ? { fontWeight: "bold", textAlign: "center" } : { textAlign: "center" };
+        return (
+            <Text style={style as any}>{option}</Text>
+        );
+    }
+    async setSelectedOption(selectedOption) {
+        this.props.fitnessActions.setSelectedFitnessMode(selectedOption);
+        await this.updateData(selectedOption);
     }
     render() {
         let { users } = this.props.store;
         users = users.map(item => { return { ...item, key: item.userId }; });
         return (
             <View style={{ flex: 1 }}>
-                <Text style={styles.column}>
-                    User: {this.props.store.email}
-                </Text>
+                <SegmentedControls style={styles.itemRow} options={["Avstånd", "Steg"]}
+                    onSelection={this.setSelectedOption.bind(this)}
+                    selectedOption={this.props.store.fitnessMode}
+                    renderOption={this.renderOption}
+                    renderContainer={(optionNodes) => <View>{optionNodes}</View>} />
                 <SectionList
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
-                    refreshControl={<RefreshControl onRefresh={this.updateData} refreshing={this.state.refreshing} />}
+                    refreshControl={<RefreshControl
+                        onRefresh={() => { this.updateData(this.props.store.fitnessMode); }}
+                        refreshing={this.state.refreshing} />}
                     renderItem={(item: IListItem) => (
                         <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS_USER, params: item.item }); }}>
                             <View style={styles.itemRow}>
                                 <Image style={{ width: 50, height: 50 }} source={{ uri: item.item.avatarUrl }} />
                                 <Text style={styles.column}>{item.item.name}</Text>
-                                <Text style={styles.column}>{(item.item.totalDistance / 1000).toFixed(2)}km</Text>
+                                {this.props.store.fitnessMode === "Avstånd" ?
+                                    <Text style={styles.column}>{(item.item.totalDistance / 1000).toFixed(2)}km</Text> :
+                                    <Text style={styles.column}>{item.item.totalSteps}</Text>}
                             </View>
                         </TouchableOpacity>
                     )}
                     sections={[
-                        { data: users, key: "Längst sträcka" }
+                        { data: users, key: this.props.store.fitnessMode }
                     ]} />
             </View>
         );
@@ -164,7 +138,8 @@ function mapStateToProps(state: StoreDef): IProps {
         store: {
             email: state.user.googleUser.email,
             users: state.fitness.users,
-            userID: state.user.googleUser.userID
+            userID: state.user.googleUser.userID,
+            fitnessMode: state.fitness.selectedFitnessMode
         } as IStoreProps
     } as IProps;
 }

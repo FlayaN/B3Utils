@@ -12,4 +12,5 @@ interface IUserViewModel {
     lastRecordedDate: string;
     avatarUrl: string;
     totalDistance: number;
+    totalSteps: number;
 }
