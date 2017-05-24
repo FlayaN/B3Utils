@@ -1,0 +1,7 @@
+{
+    "sourcePath": [
+        
+    ],
+    "classPathFile": "build\\classpath.txt",
+    "outputDirectory": "build\\vscode-classes"
+}

@@ -91,7 +91,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 imageUrl = user.photoUrlTiny;
             }
             this.props.userActions.setAvatar(imageUrl);
-            await AddUser({
+            const statusText = await AddUser({
                 name: user.name,
                 avatarUrl: imageUrl,
                 lastRecordedDate: new Date().toISOString(),
@@ -99,6 +99,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 totalDistance: 0,
                 totalSteps: 0
             });
+            this.props.baseActions.logInfo(statusText);
             if (Platform.OS === "ios") {
                 await this.initAppleHealth();
             } else {

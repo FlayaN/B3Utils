@@ -107,20 +107,16 @@ export async function GetActivities(userId: string, type: string): Promise<IActi
     return activities;
 }
 
-export async function AddUser(user: IUserViewModel): Promise<void> {
-    try {
-        const response = await fetch(`${baseUrl}/api/v1/Users/`, {
-            method: "POST",
-            body: JSON.stringify(user),
-            headers: {
-                "Content-Type": "application/json; charset=UTF-8",
-                "Accept": "application/json; charset=UTF-8"
-            }
-        });
-        console.log(response);
-    } catch (exception) {
-        console.error(exception);
-    }
+export async function AddUser(user: IUserViewModel): Promise<string> {
+    const response = await fetch(`${baseUrl}/api/v1/Users/`, {
+        method: "POST",
+        body: JSON.stringify(user),
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            "Accept": "application/json; charset=UTF-8"
+        }
+    });
+    return JSON.stringify(response);
 }
 
 export function getDailyDistance(startDate: Date, endDate: Date, userId: string): Promise<IActivityViewModel[]> {

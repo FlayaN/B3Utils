@@ -298,3 +298,4 @@ _Pvt_Extensions
 *.realm.lock
 
 index.android.bundle
+classpath.txt

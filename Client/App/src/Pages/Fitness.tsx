@@ -59,8 +59,19 @@ class FitnessPage extends React.Component<IProps, IState> {
             endDate.setHours(23, 59, 59, 999);
             endDate = addHours(endDate, 2);
 
-            let activities = await getDailyDistance(startDate, endDate, this.props.store.userID);
-            activities = activities.concat(await getDailySteps(startDate, endDate, this.props.store.userID));
+            let activities: IActivityViewModel[] = [];
+
+            try {
+                activities = activities.concat(await getDailyDistance(startDate, endDate, this.props.store.userID));
+            } catch (error) {
+                this.props.baseActions.logError(error);
+            }
+            try {
+                activities = activities.concat(await getDailySteps(startDate, endDate, this.props.store.userID));
+            } catch (error) {
+                this.props.baseActions.logError(error);
+            }
+            
             await activities.forEach(async (activity) => {
                 await AddActivity(activity);
             });
