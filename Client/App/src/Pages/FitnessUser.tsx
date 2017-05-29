@@ -2,8 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { NavigationProp, NavigationRoute } from "react-navigation";
-import { GetActivities } from "../Base/Utilities";
-
+import dateFormat from "dateformat";
 import {
     View,
     Text,
@@ -11,24 +10,23 @@ import {
     StyleSheet
 } from "react-native";
 
-import dateFormat from "dateformat";
-
+import { GetActivities } from "../Base/Utilities";
 import { Fitness } from "../Modules";
 
 interface IStoreProps {
-    activities: IActivityViewModel[];
+    activities: ActivityViewModel[];
     fitnessMode: string;
 }
 
 interface IListItem {
     index: number;
-    item: IActivityViewModel;
+    item: ActivityViewModel;
 }
 
 interface IProps {
     store: IStoreProps;
     fitnessActions: Fitness.Actions.ActionsMap;
-    navigation: NavigationProp<NavigationRoute<IUserViewModel>, any>;
+    navigation: NavigationProp<NavigationRoute<UserViewModel>, any>;
 }
 
 class FitnessUser extends React.Component<IProps, {}> {
@@ -90,9 +88,6 @@ const styles = StyleSheet.create({
 function mapStateToProps(state: StoreDef, ownProps: IProps): IProps {
     return {
         store: {
-            email: state.user.googleUser.email,
-            users: state.fitness.users,
-            userID: state.user.googleUser.userID,
             activities: state.fitness.activitiesData[ownProps.navigation.state.params.userId],
             fitnessMode: state.fitness.selectedFitnessMode
         } as IStoreProps

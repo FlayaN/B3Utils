@@ -10,7 +10,7 @@ interface IEvent {
 
 interface BaseDef {
     currPage: string;
-    navData: Object;
+    navData: any;
     eventLog: IEvent[];
 }
 
@@ -20,14 +20,20 @@ interface UserDef {
 }
 
 interface FitnessDef {
-    users: IUserViewModel[];
+    users: UserViewModel[];
     initialized: boolean;
-    activitiesData: { [userId: string]: IActivityViewModel[] };
+    activitiesData: { [userId: string]: ActivityViewModel[] };
     selectedFitnessMode: string;
+}
+
+interface IdeaDef {
+    ideas: IdeaViewModel[];
+    ideaMessages: { [ideaId: string]: MessageViewModel[] };
 }
 
 interface StoreDef {
     user: UserDef;
     base: BaseDef;
     fitness: FitnessDef;
+    idea: IdeaDef;
 }

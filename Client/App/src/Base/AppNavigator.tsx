@@ -1,20 +1,17 @@
 import React from "react";
 import { connect } from "react-redux";
 import { addNavigationHelpers, NavigationActions } from "react-navigation";
-import { User, Fitness, Base } from "../Modules";
-import { bindActionCreators } from "redux";
-
 import {
     BackHandler,
     Platform
 } from "react-native";
-
-import { LoginWithGoogle, AddUser } from "./Utilities";
-
-import { StackNav } from "./Router";
-
+import { bindActionCreators } from "redux";
 import GoogleFit from "react-native-google-fit";
 import AppleHealthKit from "react-native-apple-healthkit";
+
+import { StackNav } from "./Router";
+import { User, Fitness, Base } from "../Modules";
+import { LoginWithGoogle, AddUser } from "./Utilities";
 
 interface INavObject {
     index: number;
@@ -87,11 +84,11 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 this.props.baseActions.logInfo(`Image json: ${JSON.stringify(responseJson)}`);
                 imageUrl = responseJson.image.url;
             } catch (imageError) {
-                this.props.baseActions.logError(`Image json: ${imageError}`);
+                this.props.baseActions.logError(`Image error: ${imageError}`);
                 imageUrl = user.photoUrlTiny;
             }
             this.props.userActions.setAvatar(imageUrl);
-            const statusText = await AddUser({
+            const response = await AddUser({
                 name: user.name,
                 avatarUrl: imageUrl,
                 lastRecordedDate: new Date().toISOString(),
@@ -99,7 +96,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 totalDistance: 0,
                 totalSteps: 0
             });
-            this.props.baseActions.logInfo(statusText);
+            this.props.baseActions.logInfo(JSON.stringify(response));
             if (Platform.OS === "ios") {
                 await this.initAppleHealth();
             } else {

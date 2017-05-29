@@ -1,8 +1,6 @@
 interface Action<T>{
     type: string;
     data: T;
-    error?: boolean;
-    meta?: any;
 }
 
 interface NavigateData {
@@ -12,5 +10,10 @@ interface NavigateData {
 
 interface UserActivities {
     userId: string;
-    activities: IActivityViewModel[];
+    activities: ActivityViewModel[];
+}
+
+interface IdeaMessages {
+    ideaId: string;
+    messages: MessageViewModel[];
 }

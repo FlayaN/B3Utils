@@ -70,7 +70,7 @@ namespace Api.Controllers
         [HttpPost("")]
         public async Task<IActionResult> Add([FromBody]UserViewModel user)
         {
-            var existing = _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId);
+            var existing = await _context.Users.FirstOrDefaultAsync(x => x.UserId == user.UserId);
             if (existing == null)
             {
                 await _context.Users.AddAsync(Mapper.Map<User>(user));

@@ -1,4 +1,6 @@
 import React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import {
     Text,
     StyleSheet,
@@ -6,8 +8,7 @@ import {
     Image,
     View
 } from "react-native";
-import { connect } from "react-redux";
-import { bindActionCreators } from "redux";
+
 import { Base } from "../Modules";
 import { Pages } from "../Base/Constants";
 
@@ -27,12 +28,21 @@ class MainMenu extends React.Component<IProps, {}> {
         return (
             <View style={styles.root}>
                 <View style={styles.healthContainer}>
-                    <TouchableOpacity
-                        style={styles.healthButton}
-                        disabled={!this.props.store.fitnessInitialized}
-                        onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS }); }} >
-                        <Text style={{ fontSize: 25, fontWeight: "bold" }}>Hälsa</Text>
-                    </TouchableOpacity>
+                    <View style={{ flex: 1 }}>
+                        <TouchableOpacity
+                            style={styles.healthButton}
+                            disabled={!this.props.store.fitnessInitialized}
+                            onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS }); }} >
+                            <Text style={{ fontSize: 25, fontWeight: "bold" }}>Hälsa</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <TouchableOpacity
+                            style={styles.ideaButton}
+                            onPress={() => { this.props.baseActions.navigate({ to: Pages.IDEAS }); }} >
+                            <Text style={{ fontSize: 25, fontWeight: "bold" }}>Idéer</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.imageContainer}>
                     {this.props.store.avatarUrl !== "" ?
@@ -56,9 +66,16 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+    ideaButton: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "powderblue"
+    },
     healthContainer: {
         flex: 1,
-        backgroundColor: "skyblue"
+        backgroundColor: "skyblue",
+        flexDirection: "row"
     },
     root: {
         flex: 1

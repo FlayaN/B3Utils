@@ -6,7 +6,7 @@ namespace Api.Models.ViewModels
     {
         public Guid ActivityId { get; set; }
         public string UserId { get; set; }
-        public DateTime Date { get; set; }
+        public DateTimeOffset Date { get; set; }
         public string Type { get; set; }
         public double Amount { get; set; }
     }

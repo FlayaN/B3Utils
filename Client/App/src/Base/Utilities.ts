@@ -18,9 +18,20 @@ export async function LoginWithGoogle(): Promise<GoogleUser> {
         });
         return await GoogleSignIn.signInPromise();
     } catch (exception) {
-        console.error(exception);
+        console.log(exception);
         return undefined;
     }
+}
+
+export function convertUTCDateToLocalDate(date) {
+    let newDate = new Date(date.getTime() + date.getTimezoneOffset() * 60 * 1000);
+
+    const offset = date.getTimezoneOffset() / 60;
+    const hours = date.getHours();
+
+    newDate.setHours(hours - offset);
+
+    return newDate;
 }
 
 export function addDays(date: Date, days: number): Date {
@@ -53,76 +64,69 @@ export function update<T, K extends keyof T>(obj: T, updateSpec: Pick<T, K>): T 
 const baseUrl = "https://b3utils.azurewebsites.net";
 // const baseUrl = "http://192.168.1.198:57603";
 
-export async function GetUsers(type: string): Promise<IUserViewModel[]> {
-    let users: IUserViewModel[];
-    try {
-        console.log(type);
-        const response = await fetch(`${baseUrl}/api/v1/Users/all/${type}`);
-        users = await response.json();
-    } catch (exception) {
-        console.error(exception);
-        users = undefined;
-    }
-    return users;
+async function Get<T>(url: string): Promise<T> {
+    const response = await fetch(`${baseUrl}/${url}`);
+    return await response.json();
 }
 
-export async function GetUser(userId: string): Promise<IUserViewModel> {
-    let user: IUserViewModel;
-    try {
-        const response = await fetch(`${baseUrl}/api/v1/Users/${userId}`);
-        user = await response.json();
-    } catch (exception) {
-        console.error(exception);
-        user = undefined;
-    }
-    return user;
-}
-
-export async function AddActivity(activity: IActivityViewModel): Promise<void> {
-    try {
-        console.log("AddActivity", activity);
-        const response = await fetch(`${baseUrl}/api/v1/Activity`, {
-            method: "POST",
-            body: JSON.stringify(activity),
-            headers: {
-                "Content-Type": "application/json; charset=UTF-8",
-                "Accept": "application/json; charset=UTF-8"
-            }
-        });
-        console.log(response);
-    } catch (exception) {
-        console.error(exception);
-    }
-}
-
-export async function GetActivities(userId: string, type: string): Promise<IActivityViewModel[]> {
-    let activities: IActivityViewModel[];
-    try {
-        const response = await fetch(`${baseUrl}/api/v1/Users/${userId}/activities/${type}`);
-        activities = await response.json();
-    } catch (exception) {
-        console.error(exception);
-        activities = undefined;
-    }
-    return activities;
-}
-
-export async function AddUser(user: IUserViewModel): Promise<string> {
-    const response = await fetch(`${baseUrl}/api/v1/Users/`, {
+async function Post<T>(url: string, data: T): Promise<Response> {
+    return await fetch(`${baseUrl}/${url}`, {
         method: "POST",
-        body: JSON.stringify(user),
+        body: JSON.stringify(data),
         headers: {
             "Content-Type": "application/json; charset=UTF-8",
             "Accept": "application/json; charset=UTF-8"
         }
     });
-    return JSON.stringify(response);
 }
 
-export function getDailyDistance(startDate: Date, endDate: Date, userId: string): Promise<IActivityViewModel[]> {
+export async function GetUsers(type: string): Promise<UserViewModel[]> {
+    return Get<UserViewModel[]>(`api/v1/Users/all/${type}`);
+}
+
+export async function GetUser(userId: string): Promise<UserViewModel> {
+    return Get<UserViewModel>(`api/v1/Users/${userId}`);
+}
+
+export async function GetIdeas(): Promise<IdeaViewModel[]> {
+    return Get<IdeaViewModel[]>("api/v1/Ideas");
+}
+
+export async function GetMessages(ideaId: string): Promise<MessageViewModel[]> {
+    let messages = await Get<MessageViewModel[]>(`api/v1/Ideas/${ideaId}/Messages`);
+    return messages;
+}
+
+export async function GetActivities(userId: string, type: string): Promise<ActivityViewModel[]> {
+    let activities = await Get<ActivityViewModel[]>(`api/v1/Users/${userId}/activities/${type}`);
+
+    activities.forEach((message) => {
+        message.date = convertUTCDateToLocalDate(new Date(message.date));
+    });
+
+    return activities;
+}
+
+export async function AddMessage(message: MessageViewModel): Promise<Response> {
+    return Post(`api/v1/Ideas/${message.ideaId}/Messages`, message);
+}
+
+export async function AddUser(user: UserViewModel): Promise<Response> {
+    return Post("api/v1/Users", user);
+}
+
+export async function AddActivity(activity: ActivityViewModel): Promise<Response> {
+    return Post("api/v1/Activity", activity);
+}
+
+export async function AddIdea(idea: IdeaViewModel): Promise<Response> {
+    return Post("api/v1/Ideas", idea);
+}
+
+export function getDailyDistance(startDate: Date, endDate: Date, userId: string): Promise<ActivityViewModel[]> {
     console.log(startDate.toISOString(), endDate.toISOString(), userId);
     return new Promise((resolve, reject) => {
-        let activities: IActivityViewModel[] = [];
+        let activities: ActivityViewModel[] = [];
         if (Platform.OS === "ios") {
             getDates(startDate, endDate).forEach(date => {
                 const options = {
@@ -148,7 +152,7 @@ export function getDailyDistance(startDate: Date, endDate: Date, userId: string)
                             activityId: "00000000-0000-0000-0000-000000000000",
                             userId: userId,
                             amount: item.distance,
-                            date: addHours(tmpDate, 2),
+                            date: tmpDate,
                             type: "getDailyDistanceSamples"
                         });
                     });
@@ -161,9 +165,9 @@ export function getDailyDistance(startDate: Date, endDate: Date, userId: string)
     });
 }
 
-export function getDailySteps(startDate: Date, endDate: Date, userId: string): Promise<IActivityViewModel[]> {
+export function getDailySteps(startDate: Date, endDate: Date, userId: string): Promise<ActivityViewModel[]> {
     return new Promise((resolve, reject) => {
-        let activities: IActivityViewModel[] = [];
+        let activities: ActivityViewModel[] = [];
         if (Platform.OS === "ios") {
             // getDates(startDate, endDate).forEach(date => {
             //     const options = {
@@ -190,7 +194,7 @@ export function getDailySteps(startDate: Date, endDate: Date, userId: string): P
                             activityId: "00000000-0000-0000-0000-000000000000",
                             userId: userId,
                             amount: item.steps,
-                            date: addHours(tmpDate, 2),
+                            date: tmpDate,
                             type: "getDailyStepCountSamples"
                         });
                     });

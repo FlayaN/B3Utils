@@ -2,14 +2,14 @@ import { ActionTypes } from "./Constants";
 import { ActionCreatorsMapObject } from "redux";
 
 export interface ActionsMap extends ActionCreatorsMapObject {
-    setUsers(users: IUserViewModel[]): Action<IUserViewModel[]>;
+    setUsers(users: UserViewModel[]): Action<UserViewModel[]>;
     setInitialized(initialized: boolean): Action<boolean>;
     setUserActivities(userActivities: UserActivities): Action<UserActivities>;
     setSelectedFitnessMode(selectedFitnessMode: string): Action<string>;
 }
 
 export const Actions: ActionsMap = {
-    setUsers: (users: IUserViewModel[]): Action<IUserViewModel[]> => {
+    setUsers: (users: UserViewModel[]): Action<UserViewModel[]> => {
         return {
             type: ActionTypes.SET_USERS,
             data: users

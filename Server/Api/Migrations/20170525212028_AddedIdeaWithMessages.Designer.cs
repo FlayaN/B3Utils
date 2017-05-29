@@ -9,9 +9,10 @@ using System;
 namespace Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170525212028_AddedIdeaWithMessages")]
+    partial class AddedIdeaWithMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.0-preview1-24937")
@@ -24,7 +25,7 @@ namespace Api.Migrations
 
                     b.Property<double>("Amount");
 
-                    b.Property<DateTimeOffset>("Date");
+                    b.Property<DateTime>("Date");
 
                     b.Property<string>("Type");
 
@@ -46,7 +47,7 @@ namespace Api.Migrations
 
                     b.Property<string>("Header");
 
-                    b.Property<DateTimeOffset>("TimeStamp");
+                    b.Property<DateTime>("TimeStamp");
 
                     b.Property<string>("UserId");
 
@@ -66,7 +67,7 @@ namespace Api.Migrations
 
                     b.Property<string>("Text");
 
-                    b.Property<DateTimeOffset>("TimeStamp");
+                    b.Property<DateTime>("TimeStamp");
 
                     b.Property<string>("UserId");
 

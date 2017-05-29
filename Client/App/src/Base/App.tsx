@@ -2,18 +2,17 @@ import React from "react";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware, combineReducers } from "redux";
 import thunk from "redux-thunk";
+import codePush from "react-native-code-push";
+import { composeWithDevTools } from "remote-redux-devtools";
 
 import { StackNav, TabNav } from "./Router";
-
-import { User, Base, Fitness } from "../Modules";
+import { User, Base, Fitness, Idea } from "../Modules";
 import {
     Pages,
     Modules
 } from "./Constants";
 
-import { composeWithDevTools } from "remote-redux-devtools";
-
-import codePush from "react-native-code-push";
+import { reducer as formReducer } from "redux-form";
 
 const middeWares = [
     thunk
@@ -24,7 +23,9 @@ const middleware = composeWithDevTools(applyMiddleware(...middeWares));
 const rootReducer = combineReducers<StoreDef>({
     [Modules.user]: User.Reducer,
     [Modules.base]: Base.Reducer,
-    [Modules.fitness]: Fitness.Reducer
+    [Modules.fitness]: Fitness.Reducer,
+    [Modules.idea]: Idea.Reducer,
+    form: formReducer
 });
 
 const firstAction = StackNav.router.getActionForPathAndParams(Pages.MAINMENU);
@@ -55,6 +56,10 @@ const defaultStore: StoreDef = {
         initialized: false,
         activitiesData: {},
         selectedFitnessMode: "Avstånd"
+    },
+    idea: {
+        ideas: [],
+        ideaMessages: {}
     }
 };
 
@@ -71,9 +76,9 @@ if (module.hot) {
 class App extends React.Component<{}, {}> {
     componentDidMount() {
         // Download update
-        codePush.sync({
-            installMode: codePush.InstallMode.IMMEDIATE
-        });
+        // codePush.sync({
+        //     installMode: codePush.InstallMode.IMMEDIATE
+        // });
     }
     render() {
         return (
@@ -84,4 +89,4 @@ class App extends React.Component<{}, {}> {
     }
 }
 
-export default codePush({ checkFrequency: codePush.CheckFrequency.MANUAL })(App);
+export default codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME })(App);

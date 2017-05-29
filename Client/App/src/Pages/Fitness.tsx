@@ -1,7 +1,6 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-
 import {
     View,
     Text,
@@ -11,22 +10,22 @@ import {
     TouchableOpacity,
     RefreshControl
 } from "react-native";
+import { SegmentedControls } from "react-native-radio-buttons";
 
 import { Fitness, Base } from "../Modules";
-import { GetUsers, GetUser, AddActivity, addHours, getDailyDistance, getDailySteps } from "../Base/Utilities";
+import { GetUsers, GetUser, AddActivity, getDailyDistance, getDailySteps } from "../Base/Utilities";
 import { Pages } from "../Base/Constants";
-import { SegmentedControls } from "react-native-radio-buttons";
 
 interface IStoreProps {
     email: string;
-    users: IUserViewModel[];
+    users: UserViewModel[];
     userID: string;
     fitnessMode: string;
 }
 
 interface IListItem {
     index: number;
-    item: IUserViewModel;
+    item: UserViewModel;
 }
 
 interface IProps {
@@ -53,13 +52,13 @@ class FitnessPage extends React.Component<IProps, IState> {
             const currUser = await GetUser(this.props.store.userID);
 
             let startDate = new Date(currUser.lastRecordedDate);
-            startDate.setHours(2, 0, 0, 0);
+            startDate.setDate(startDate.getDate() - 2);
+            startDate.setHours(0, 0, 0, 0);
 
             let endDate = new Date();
             endDate.setHours(23, 59, 59, 999);
-            endDate = addHours(endDate, 2);
 
-            let activities: IActivityViewModel[] = [];
+            let activities: ActivityViewModel[] = [];
 
             try {
                 activities = activities.concat(await getDailyDistance(startDate, endDate, this.props.store.userID));
@@ -71,7 +70,7 @@ class FitnessPage extends React.Component<IProps, IState> {
             } catch (error) {
                 this.props.baseActions.logError(error);
             }
-            
+
             await activities.forEach(async (activity) => {
                 await AddActivity(activity);
             });

@@ -1,5 +1,5 @@
 const rn = require('react-native')
-// const cp = require('react-native-code-push')
+
 jest.mock('Linking', () => {
   return {
     addEventListener: jest.fn(),
@@ -9,10 +9,22 @@ jest.mock('Linking', () => {
     getInitialURL: jest.fn(),
   }
 });
-// jest.mock('react-native-code-push', () => {
+
+jest.mock("react-native-google-sign-in", () => {
+  return {
+    configure: jest.fn(),
+    signInPromise: jest.fn()
+  }
+})
+
+// jest.dontMock("react-native-code-push");
+
+// jest.mock("react-native-code-push", () => {
 //   return {
-//     CheckFrequency: undefined
+//     CheckFrequency: {},
 //   }
-// });
-// module.exports = Object.assign(rn, cp)
+// })
+
+jest.doMock("react-native-code-push");
+
 module.exports = rn

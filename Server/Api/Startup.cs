@@ -34,6 +34,8 @@ namespace Api
             });
 
             services.AddAutoMapper();
+
+            services.AddSignalRCore();
             
         }
         

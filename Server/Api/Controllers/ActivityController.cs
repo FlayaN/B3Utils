@@ -4,9 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Api.Models.ViewModels;
 using Api.Models.Database;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
 using System.Collections.Generic;
-using System;
 
 namespace Api.Controllers
 {
@@ -23,7 +21,6 @@ namespace Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Add([FromBody]ActivityViewModel activity)
         {
-            //activity.Date.AddHours(2);
             var user = _context.Users
                 .Include(x => x.Activities)
                 .FirstOrDefault(x => x.UserId == activity.UserId);
