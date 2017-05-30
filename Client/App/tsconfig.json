@@ -10,13 +10,13 @@
     "noImplicitAny": false,
     "preserveConstEnums": true,
     "allowJs": false,
-    "sourceMap": true,
     "noImplicitReturns": true,
     "noUnusedParameters": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "sourceMap": true,
+    "sourceRoot": "src"
   },
   "filesGlob": [
-    "typings/index.d.ts",
     "src/**/*.ts",
     "src/**/*.tsx"
   ],

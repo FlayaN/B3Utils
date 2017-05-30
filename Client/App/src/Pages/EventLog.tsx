@@ -32,7 +32,7 @@ class EventLog extends React.Component<IProps, {}> {
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
                     renderItem={(item: IListItem) => (
                         <View style={styles.itemRow}>
-                            <Text style={styles.column}>{item.item.message}</Text>
+                            <Text style={[styles.column, {color: item.item.type === EventType.Error ? "red" : "black"}]}>{item.item.message}</Text>
                         </View>
                     )}
                     sections={[

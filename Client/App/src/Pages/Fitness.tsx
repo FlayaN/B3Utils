@@ -15,6 +15,9 @@ import { SegmentedControls } from "react-native-radio-buttons";
 import { Fitness, Base } from "../Modules";
 import { GetUsers, GetUser, AddActivity, getDailyDistance, getDailySteps } from "../Base/Utilities";
 import { Pages } from "../Base/Constants";
+import Icon from "react-native-vector-icons/Ionicons";
+import FaIcon from "react-native-vector-icons/FontAwesome";
+import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 
 interface IStoreProps {
     email: string;
@@ -74,7 +77,7 @@ class FitnessPage extends React.Component<IProps, IState> {
             await activities.forEach(async (activity) => {
                 await AddActivity(activity);
             });
-            const correctType = type === "Steg" ? "getDailyStepCountSamples" : "getDailyDistanceSamples";
+            const correctType = type === "road" ? "getDailyDistanceSamples" : "getDailyStepCountSamples";
             this.props.fitnessActions.setUsers(await GetUsers(correctType));
         } catch (error) {
             this.props.baseActions.logError(error);
@@ -86,9 +89,13 @@ class FitnessPage extends React.Component<IProps, IState> {
     }
     renderOption(option, selected) {
         const style = selected ? { fontWeight: "bold", textAlign: "center" } : { textAlign: "center" };
-        return (
-            <Text style={style as any}>{option}</Text>
-        );
+
+        if (option === "road") {
+            return <FaIcon style={style as any} name={option} size={20}></FaIcon>;
+        } else {
+            return <Icon style={style as any} name={option} size={20}></Icon>;
+        }
+        // <Text style={style as any}>{option}</Text>
     }
     async setSelectedOption(selectedOption) {
         this.props.fitnessActions.setSelectedFitnessMode(selectedOption);
@@ -99,11 +106,13 @@ class FitnessPage extends React.Component<IProps, IState> {
         users = users.map(item => { return { ...item, key: item.userId }; });
         return (
             <View style={{ flex: 1 }}>
-                <SegmentedControls style={styles.itemRow} options={["Avstånd", "Steg"]}
-                    onSelection={this.setSelectedOption.bind(this)}
-                    selectedOption={this.props.store.fitnessMode}
-                    renderOption={this.renderOption}
-                    renderContainer={(optionNodes) => <View>{optionNodes}</View>} />
+                <View style={{ width: 150, marginTop: 10, marginLeft: 10 }}>
+                    <SegmentedControls style={styles.itemRow} options={["road", "md-walk"]}
+                        onSelection={this.setSelectedOption.bind(this)}
+                        selectedOption={this.props.store.fitnessMode}
+                        renderOption={this.renderOption}
+                        renderContainer={(optionNodes) => <View>{optionNodes}</View>} />
+                </View>
                 <SectionList
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
                     refreshControl={<RefreshControl
@@ -113,15 +122,17 @@ class FitnessPage extends React.Component<IProps, IState> {
                         <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS_USER, params: item.item }); }}>
                             <View style={styles.itemRow}>
                                 <Image style={{ width: 50, height: 50 }} source={{ uri: item.item.avatarUrl }} />
+                                {item.index === 0
+                                    && <MCIcon style={{ position: "absolute", marginLeft: 10, top: -15 }} size={30} color="gold" name="crown" />}
                                 <Text style={styles.column}>{item.item.name}</Text>
-                                {this.props.store.fitnessMode === "Avstånd" ?
-                                    <Text style={styles.column}>{(item.item.totalDistance / 1000).toFixed(2)}km</Text> :
-                                    <Text style={styles.column}>{item.item.totalSteps}</Text>}
+                                {this.props.store.fitnessMode === "road" ?
+                                    <FaIcon name="road" size={20}>{(item.item.totalDistance / 1000).toFixed(2)}km</FaIcon> :
+                                    <Icon name="md-walk" size={20}>{item.item.totalSteps}</Icon>}
                             </View>
                         </TouchableOpacity>
                     )}
                     sections={[
-                        { data: users, key: this.props.store.fitnessMode }
+                        { data: users, key: this.props.store.fitnessMode === "road" ? "Sträcka" : "Steg" }
                     ]} />
             </View>
         );
@@ -139,7 +150,8 @@ const styles = StyleSheet.create({
         margin: 10
     },
     column: {
-        marginLeft: 10
+        marginLeft: 10,
+        flex: 1
     }
 });
 

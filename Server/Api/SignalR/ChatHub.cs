@@ -1,19 +1,19 @@
 ﻿using Api.Models.ViewModels;
-using Microsoft.AspNetCore.SignalR;
+//using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace Api.SignalR
 {
+    //public interface Client : IClientProxy
+    //{
+    //    void Send(MessageViewModel message);
+    //}
 
-    public interface Client
-    {
-        void Send(MessageViewModel message);
-    }
-
-    public class ChatHub: Hub<Client>
-    {
-        public void Send(MessageViewModel message)
-        {
-            Clients.All.Send(message);
-        }
-    }
+    //public class ChatHub : Hub
+    //{
+    //    public Task Send(MessageViewModel message)
+    //    {
+    //        return Clients.All.InvokeAsync("Send", message);
+    //    }
+    //}
 }

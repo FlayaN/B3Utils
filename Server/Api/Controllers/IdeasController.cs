@@ -33,7 +33,7 @@ namespace Api.Controllers
             var ideas = _context.Ideas
                 .Include(x => x.Messages) //Needed for MessageCount
                 .Include(x => x.User) //Needed for UserName
-                .Select(Mapper.Map<IdeaViewModel>).ToList();
+                .Select(Mapper.Map<IdeaViewModel>).OrderByDescending(x=> x.TimeStamp).ToList();
             return new OkObjectResult(ideas);
         }
 

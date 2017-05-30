@@ -12,6 +12,8 @@ import {
 
 import { GetActivities } from "../Base/Utilities";
 import { Fitness } from "../Modules";
+import Icon from "react-native-vector-icons/Ionicons";
+import FaIcon from "react-native-vector-icons/FontAwesome";
 
 interface IStoreProps {
     activities: ActivityViewModel[];
@@ -36,7 +38,7 @@ class FitnessUser extends React.Component<IProps, {}> {
     }
     async updateData() {
         const userId = this.props.navigation.state.params.userId;
-        const correctType = this.props.store.fitnessMode === "Steg" ? "getDailyStepCountSamples" : "getDailyDistanceSamples";
+        const correctType = this.props.store.fitnessMode === "road" ? "getDailyDistanceSamples" : "getDailyStepCountSamples";
         const activities = await GetActivities(userId, correctType);
         this.props.fitnessActions.setUserActivities({ userId: userId, activities: activities });
     }
@@ -56,9 +58,9 @@ class FitnessUser extends React.Component<IProps, {}> {
                         renderItem={(item: IListItem) => (
                             <View style={styles.itemRow}>
                                 <Text style={styles.column}>{dateFormat(item.item.date, "yyyy-mm-dd dddd")}</Text>
-                                {this.props.store.fitnessMode === "Avstånd" ?
-                                    <Text style={styles.column}>{(item.item.amount / 1000).toFixed(2)}km</Text> :
-                                    <Text style={styles.column}>{item.item.amount}</Text>}
+                                {this.props.store.fitnessMode === "road" ?
+                                    <FaIcon name={"road"} size={20}>{(item.item.amount / 1000).toFixed(2)}km</FaIcon> :
+                                    <Icon name="md-walk" size={20}>{item.item.amount}</Icon>}
                             </View>
                         )}
                         sections={[
@@ -81,7 +83,8 @@ const styles = StyleSheet.create({
         margin: 10
     },
     column: {
-        marginLeft: 10
+        marginLeft: 10,
+        flex: 1
     }
 });
 

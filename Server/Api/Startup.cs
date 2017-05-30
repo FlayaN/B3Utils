@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
+using Api.SignalR;
 
 namespace Api
 {
@@ -35,18 +36,23 @@ namespace Api
 
             services.AddAutoMapper();
 
-            services.AddSignalRCore();
-            
+            //services.AddSignalR();
         }
         
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseMvc();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+
+            //app.UseSignalR(routes =>
+            //{
+            //    routes.MapHub<ChatHub>("chat");
+            //});
+
+            app.UseMvc();
         }
     }
 }

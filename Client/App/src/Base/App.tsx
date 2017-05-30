@@ -55,7 +55,7 @@ const defaultStore: StoreDef = {
         users: [],
         initialized: false,
         activitiesData: {},
-        selectedFitnessMode: "Avstånd"
+        selectedFitnessMode: "road"
     },
     idea: {
         ideas: [],
@@ -74,11 +74,11 @@ if (module.hot) {
 }
 
 class App extends React.Component<{}, {}> {
-    componentDidMount() {
+    async componentDidMount() {
         // Download update
-        // codePush.sync({
-        //     installMode: codePush.InstallMode.IMMEDIATE
-        // });
+        await codePush.sync({
+            installMode: codePush.InstallMode.ON_NEXT_RESTART
+        });
     }
     render() {
         return (
@@ -89,4 +89,4 @@ class App extends React.Component<{}, {}> {
     }
 }
 
-export default codePush({ checkFrequency: codePush.CheckFrequency.ON_APP_RESUME })(App);
+export default codePush({ checkFrequency: codePush.CheckFrequency.MANUAL })(App);
