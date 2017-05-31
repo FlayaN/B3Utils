@@ -47,6 +47,23 @@ namespace Api.Controllers
             return new OkObjectResult(idea);
         }
 
+
+        [HttpDelete("{ideaId}")]
+        public async Task<IActionResult> DeleteIdea(Guid ideaId)
+        {
+            var idea = await _context.Ideas.FirstOrDefaultAsync(x => x.Id == ideaId); //Todo: check if auth user owns idea
+            if (idea != null)
+            {
+                _context.Messages.RemoveRange(_context.Messages.Where(x => x.IdeaId == ideaId));
+
+                _context.Ideas.Remove(idea);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+
         [HttpGet("{ideaId}/Messages")]
         public async Task<IActionResult> GetMessages(Guid ideaId)
         {
