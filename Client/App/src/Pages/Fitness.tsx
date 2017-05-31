@@ -8,7 +8,8 @@ import {
     Image,
     StyleSheet,
     TouchableOpacity,
-    RefreshControl
+    RefreshControl,
+    Platform
 } from "react-native";
 import { SegmentedControls } from "react-native-radio-buttons";
 
@@ -18,6 +19,8 @@ import { Pages } from "../Base/Constants";
 import Icon from "react-native-vector-icons/Ionicons";
 import FaIcon from "react-native-vector-icons/FontAwesome";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import AppleHealthKit from "react-native-apple-healthkit-rn0.40";
+import GoogleFit from "react-native-google-fit";
 
 interface IStoreProps {
     email: string;
@@ -45,13 +48,55 @@ class FitnessPage extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.updateData = this.updateData.bind(this);
+        this.initGoogleFit = this.initGoogleFit.bind(this);
+        this.initAppleHealth = this.initAppleHealth.bind(this);
         this.state = {
             refreshing: false
         };
     }
+    async initGoogleFit() {
+        await GoogleFit.authorizeFit();
+        await GoogleFit.onAuthorize((result) => {
+            this.props.baseActions.logInfo(`GoogleFit.onAuthorize: ${JSON.stringify(result)}`);
+        });
+
+        // await GoogleFit.observeSteps((step) => {
+        //     this.props.baseActions.logInfo(`GoogleFit.observeSteps: ${JSON.stringify(step)}`);
+        // });
+    }
+    async initAppleHealth() {
+        const HKTYPE = AppleHealthKit.Constants.Permissions;
+
+        const options = {
+            permissions: {
+                read: [HKTYPE.StepCount, HKTYPE.DistanceWalkingRunning],
+                write: []
+            }
+        };
+
+        return new Promise((resolve, reject) => {
+            AppleHealthKit.initHealthKit(options, (err, res) => {
+                if (err) {
+                    reject(err);
+                    this.props.baseActions.logError(`AppleHealthKit.initHealthKit: ${JSON.stringify(res)}`);
+                    return;
+                }
+                resolve(res);
+                this.props.baseActions.logInfo(JSON.stringify(res));
+            });
+        });
+    }
+
     async updateData(type) {
         try {
             this.setState({ refreshing: true });
+
+            if (Platform.OS === "ios") {
+                await this.initAppleHealth();
+            } else {
+                await this.initGoogleFit();
+            }
+
             const currUser = await GetUser(this.props.store.userID);
 
             let startDate = new Date(currUser.lastRecordedDate);
@@ -66,7 +111,7 @@ class FitnessPage extends React.Component<IProps, IState> {
             try {
                 activities = activities.concat(await getDailyDistance(startDate, endDate, this.props.store.userID));
             } catch (error) {
-                this.props.baseActions.logError(error);
+                this.props.baseActions.logError(JSON.stringify(error));
             }
             try {
                 activities = activities.concat(await getDailySteps(startDate, endDate, this.props.store.userID));
@@ -95,7 +140,6 @@ class FitnessPage extends React.Component<IProps, IState> {
         } else {
             return <Icon style={style as any} name={option} size={20}></Icon>;
         }
-        // <Text style={style as any}>{option}</Text>
     }
     async setSelectedOption(selectedOption) {
         this.props.fitnessActions.setSelectedFitnessMode(selectedOption);

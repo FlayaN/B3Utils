@@ -1,7 +1,7 @@
 interface ActivityViewModel {
     activityId: string;
     userId: string;
-    date: Date;
+    date: string;
     type: string;
     amount: number;
 }

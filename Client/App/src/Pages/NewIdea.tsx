@@ -2,6 +2,8 @@ import React from "react";
 import { reduxForm, FormProps, Field } from "redux-form";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { NavigationScreenProp } from "react-navigation";
+
 
 import moment from "moment";
 
@@ -12,7 +14,7 @@ import {
 } from "react-native";
 
 import { AddIdea } from "../Base/Utilities";
-import { Pages } from "../Base/Constants";
+// import { Pages } from "../Base/Constants";
 
 import { FormTextInput } from "../Components";
 
@@ -25,6 +27,7 @@ interface IStoreProps {
 interface IProps extends FormProps<IdeaViewModel, void, void> {
     store: IStoreProps;
     baseActions: Base.Actions.ActionsMap;
+    navigation: NavigationScreenProp<any, any>;
 }
 
 class NewIdea extends React.Component<IProps, {}> {
@@ -42,10 +45,10 @@ class NewIdea extends React.Component<IProps, {}> {
             messageCount: 0,
             timeStamp: moment().format()
         });
-
+        
         this.props.reset();
-
-        this.props.baseActions.navigate({to: Pages.IDEAS});
+        // this.props.baseActions.shouldUpdateParent(true);
+        this.props.navigation.goBack(null);
     }
     render() {
         const { handleSubmit, submitting } = this.props;
@@ -85,12 +88,22 @@ export default reduxForm({
             errors.header = "Rubrik krävs";
         }
 
-        if (values.header && values.header.length > 35) {
-            errors.header = "För lång rubrik, max 35 tecken";
+        if (values.header) {
+            if(!values.header.trim().length) {
+                errors.header = "Kräver mer än enbart \"whitespace\"";
+            } else if(values.header.length > 35) {
+                errors.header = "För lång rubrik, max 35 tecken";
+            }
         }
 
         if (!values.detail) {
             errors.detail = "Detailjer krävs";
+        }
+
+        if (values.detail) {
+            if(!values.detail.trim().length) {
+                errors.detail = "Kräver mer än enbart \"whitespace\"";
+            }
         }
         return errors;
     }

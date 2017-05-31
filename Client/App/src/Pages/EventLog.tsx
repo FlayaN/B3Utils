@@ -27,7 +27,7 @@ class EventLog extends React.Component<IProps, {}> {
     render() {
         const events = this.props.store.events.map((item, index) => { return {...item, key: index}; });
         return (
-            <View>
+            <View style={{flex: 1}}>
                 <SectionList
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
                     renderItem={(item: IListItem) => (

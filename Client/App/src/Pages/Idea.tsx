@@ -1,14 +1,17 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import { NavigationProp, NavigationRoute } from "react-navigation";
+import { NavigationScreenProp, NavigationRoute } from "react-navigation";
 
 import {
     View,
-    Text
+    Text,
+    Button,
+    Alert
 } from "react-native";
 
-import { GetMessages, AddMessage } from "../Base/Utilities";
+import { GetMessages, AddMessage, DeleteIdea } from "../Base/Utilities";
+// import { Pages } from "../Base/Constants";
 import { Idea, Base } from "../Modules";
 import { GiftedChat } from "react-native-gifted-chat";
 import moment from "moment";
@@ -25,7 +28,7 @@ interface IStoreProps {
 interface IProps {
     store: IStoreProps;
     ideaActions: Idea.Actions.ActionsMap;
-    navigation: NavigationProp<NavigationRoute<IdeaViewModel>, any>;
+    navigation: NavigationScreenProp<NavigationRoute<IdeaViewModel>, any>;
     baseActions: Base.Actions.ActionsMap;
 }
 
@@ -34,12 +37,33 @@ class IdeaPage extends React.Component<IProps, {}> {
         super(props);
         this.updateData = this.updateData.bind(this);
         this.onSend = this.onSend.bind(this);
+        this.deleteIdea = this.deleteIdea.bind(this);
     }
     async updateData() {
         const ideaId = this.props.navigation.state.params.id;
         const messages = await GetMessages(ideaId);
         console.log(messages);
         this.props.ideaActions.setMessages({ ideaId, messages });
+    }
+    deleteIdea() {
+        Alert.alert(
+            "TA BORT IDÈ",
+            "Är du säker på att du vill ta bort denna idé?",
+            [
+                {
+                    text: "Ja",
+                    onPress: () => {
+                        this.setState({removing: true});
+                        DeleteIdea(this.props.store.idea.id).then(() => {
+                            this.props.navigation.goBack(null);
+                        });
+                    }
+                },
+                {
+                    text: "Nej"
+                }
+            ]
+        )
     }
     async componentDidMount() {
         await this.updateData();
@@ -83,7 +107,7 @@ class IdeaPage extends React.Component<IProps, {}> {
     render() {
         const { idea, messages } = this.props.store;
         if (idea === undefined) {
-            return undefined;
+            return null;
         }
         let mappedMessages = [];
         if (messages !== undefined) {
@@ -103,6 +127,7 @@ class IdeaPage extends React.Component<IProps, {}> {
         return (
             <View style={{ flex: 1, margin: 20 }}>
                 <Text>{idea.detail}</Text>
+                {this.props.store.userId === this.props.store.idea.userId && <Button title="Ta bort idé" onPress={this.deleteIdea} />}
                 <GiftedChat
                     messages={mappedMessages}
                     onSend={this.onSend}

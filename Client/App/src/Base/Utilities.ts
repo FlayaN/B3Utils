@@ -1,7 +1,8 @@
 import GoogleSignIn from "react-native-google-sign-in";
 import { Platform } from "react-native";
 import GoogleFit from "react-native-google-fit";
-import AppleHealthKit from "react-native-apple-healthkit";
+import AppleHealthKit from "react-native-apple-healthkit-rn0.40";
+import moment from "moment";
 
 export async function LoginWithGoogle(): Promise<GoogleUser> {
     let clientId = "509942424685-ojd84ecu7eobre41dqp504arseomtdtk.apps.googleusercontent.com";
@@ -80,6 +81,16 @@ async function Post<T>(url: string, data: T): Promise<Response> {
     });
 }
 
+async function Delete(url: string): Promise<Response> {
+    return await fetch(`${baseUrl}/${url}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+            "Accept": "application/json; charset=UTF-8"
+        }
+    });
+}
+
 export async function GetUsers(type: string): Promise<UserViewModel[]> {
     return Get<UserViewModel[]>(`api/v1/Users/all/${type}`);
 }
@@ -100,15 +111,19 @@ export async function GetMessages(ideaId: string): Promise<MessageViewModel[]> {
 export async function GetActivities(userId: string, type: string): Promise<ActivityViewModel[]> {
     let activities = await Get<ActivityViewModel[]>(`api/v1/Users/${userId}/activities/${type}`);
 
-    activities.forEach((message) => {
-        message.date = convertUTCDateToLocalDate(new Date(message.date));
-    });
+    // activities.forEach((message) => {
+    //     message.date = convertUTCDateToLocalDate(new Date(message.date));
+    // });
 
     return activities;
 }
 
 export async function AddMessage(message: MessageViewModel): Promise<Response> {
     return Post(`api/v1/Ideas/${message.ideaId}/Messages`, message);
+}
+
+export async function DeleteIdea(ideaId: string): Promise<Response> {
+    return Delete(`api/v1/Ideas/${ideaId}`);
 }
 
 export async function AddUser(user: UserViewModel): Promise<Response> {
@@ -123,23 +138,59 @@ export async function AddIdea(idea: IdeaViewModel): Promise<Response> {
     return Post("api/v1/Ideas", idea);
 }
 
+function asyncDateLoop(startDate: Date, functionToLoop: Function, callback: Function, ) {
+    let currDate = startDate;
+
+    const loop = () => {
+        console.log(currDate)
+        currDate = addDays(currDate, 1);
+        if(currDate > new Date()) {
+            console.log("SDASDASDASDASD")
+            callback();
+            return;
+        }
+        functionToLoop(loop, currDate);
+    }
+    loop();
+}
+
+// async function AppleGetDistance(startDate: Date, endDate: Date) : Promise<any> {
+//     return new Promise(async (resolve, reject) => {
+//         await getDates(startDate, endDate).forEach(date => {
+//             AppleHealthKit.getDistanceWalkingRunning({startDate: date.toISOString()}, (err, res) => {
+//                 if (err) {
+//                     reject(err);
+//                 } else {
+//                     resolve(res);
+//                 }
+//             });
+//         });
+//     });
+// }
+
 export function getDailyDistance(startDate: Date, endDate: Date, userId: string): Promise<ActivityViewModel[]> {
     console.log(startDate.toISOString(), endDate.toISOString(), userId);
     return new Promise((resolve, reject) => {
         let activities: ActivityViewModel[] = [];
         if (Platform.OS === "ios") {
-            getDates(startDate, endDate).forEach(date => {
-                const options = {
-                    date: date
-                };
-                AppleHealthKit.getDistanceWalkingRunning(options, (err, res) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        this.props.baseActions.logInfo(`getDistanceWalkingRunning: ${res}`);
-                    }
-                });
+            asyncDateLoop(startDate, (loop, date) => {
+                console.log(date);
+                AppleHealthKit.getDistanceWalkingRunning({startDate: date.toISOString()}, (err, res) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    console.log("result", res);
+                    activities.push({
+                        activityId: "00000000-0000-0000-0000-000000000000",
+                        userId: userId,
+                        amount: res.value,
+                        date: moment(res.startDate).format(),
+                        type: "getDailyDistanceSamples"
+                    });
+                    loop();
+                }
             });
+        }, () => {console.log("activites", activities);resolve(activities); });
         } else {
             GoogleFit.getDailyDistanceSamples({
                 startDate: startDate.toISOString(),
@@ -147,12 +198,11 @@ export function getDailyDistance(startDate: Date, endDate: Date, userId: string)
             }, (data, extra) => {
                 if (data === false) {
                     extra.forEach(item => {
-                        let tmpDate = new Date(item.endDate);
                         activities.push({
                             activityId: "00000000-0000-0000-0000-000000000000",
                             userId: userId,
                             amount: item.distance,
-                            date: tmpDate,
+                            date: moment(item.endDate).format(),
                             type: "getDailyDistanceSamples"
                         });
                     });
@@ -169,19 +219,22 @@ export function getDailySteps(startDate: Date, endDate: Date, userId: string): P
     return new Promise((resolve, reject) => {
         let activities: ActivityViewModel[] = [];
         if (Platform.OS === "ios") {
-            // getDates(startDate, endDate).forEach(date => {
-            //     const options = {
-            //         date: date
-            //     };
-            //     AppleHealthKit.getDistanceWalkingRunning(options, (err, res) => {
-            //         if (err) {
-            //             reject(err);
-            //         } else {
-            //             console.log(res);
-            //             // this.props.baseActions.logInfo(`getDistanceWalkingRunning: ${res}`);
-            //         }
-            //     });
-            // });
+            AppleHealthKit.getDailyStepCountSamples({startDate: startDate.toISOString()}, (err, res) => {
+                if(err) {
+                    reject(err.message);
+                } else {
+                    res.forEach(item => {
+                        activities.push({
+                            activityId: "00000000-0000-0000-0000-000000000000",
+                            userId: userId,
+                            amount: item.value,
+                            date: moment(item.startDate).format(),
+                            type: "getDailyStepCountSamples"
+                        });
+                    });
+                    resolve(activities);
+                }
+            });
         } else {
             GoogleFit.getDailyStepCountSamples({
                 startDate: startDate.toISOString(),
@@ -189,12 +242,11 @@ export function getDailySteps(startDate: Date, endDate: Date, userId: string): P
             }, (data, extra) => {
                 if (data === false) {
                     extra.forEach(item => {
-                        let tmpDate = new Date(item.endDate);
                         activities.push({
                             activityId: "00000000-0000-0000-0000-000000000000",
                             userId: userId,
                             amount: item.steps,
-                            date: tmpDate,
+                            date: moment(item.endDate).format(),
                             type: "getDailyStepCountSamples"
                         });
                     });

@@ -1,5 +1,8 @@
-import { StackNavigator, TabNavigator, TabNavigatorConfig } from "react-navigation";
+import React from "react";
+
+import { StackNavigator, TabNavigator } from "react-navigation";
 import { connect } from "react-redux";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 import { Pages } from "./Constants";
 import {
@@ -55,12 +58,21 @@ export const StackNav = StackNavigator({
 
 export const TabNav = connect()(TabNavigator({
     B3Utils: {
-        screen: AppWithNavigationState
+        screen: AppWithNavigationState,
+        navigationOptions: {
+            tabBarIcon: ({tintColor}) => <Icon name="home" size={35} color={tintColor} />
+        }
     },
     Logg: {
-        screen: EventLog
-    } as TabNavigatorConfig,
+        screen: EventLog,
+        navigationOptions: {
+            tabBarIcon: ({tintColor}) => <Icon name="list-alt" size={35} color={tintColor} />
+        }
+    },
     Profil: {
-        screen: Profile
+        screen: Profile,
+        navigationOptions: {
+            tabBarIcon: ({tintColor}) => <Icon name="user-circle" size={35} color={tintColor} />
+        }
     }
 }));

@@ -19,7 +19,7 @@
     "moment": "^2.18.1",
     "react": "16.0.0-alpha.6",
     "react-native": "^0.44.0",
-    "react-native-apple-healthkit": "^0.2.1",
+    "react-native-apple-healthkit-rn0.40": "^0.3.2",
     "react-native-code-push": "^2.0.3-beta",
     "react-native-gifted-chat": "^0.1.4",
     "react-native-google-fit": "^0.2.0",

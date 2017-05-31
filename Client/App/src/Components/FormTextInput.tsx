@@ -8,9 +8,9 @@ import {
 
 const FormTextInput = ({ input: { onChange, ...restInput }, meta }) => {
     return (
-        <View>
-            <TextInput onChangeText={onChange} {...restInput} />
-            {meta.visited && !meta.active && meta.invalid && <Text style={{ color: "red" }}>{meta.error}</Text>}
+        <View style={{height: 60}}>
+            <TextInput style={{flex: 1}} onChangeText={onChange} {...restInput} />
+            {meta.touched && meta.error && <Text style={{ color: "red" }}>{meta.error}</Text>}
         </View>
     );
 };

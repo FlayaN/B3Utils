@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
+import { NavigationScreenProp } from "react-navigation";
 import {
     View,
     Text,
@@ -30,6 +31,7 @@ interface IProps {
     store: IStoreProps;
     baseActions: Base.Actions.ActionsMap;
     ideaActions: Idea.Actions.ActionsMap;
+    navigation: NavigationScreenProp<any, any>;
 }
 
 interface IState {
@@ -47,9 +49,7 @@ class Ideas extends React.Component<IProps, IState> {
     async updateData() {
         try {
             this.setState({ refreshing: true });
-            const ideas = await GetIdeas();
-            console.log(ideas);
-            this.props.ideaActions.setIdeas(ideas);
+            this.props.ideaActions.setIdeas(await GetIdeas());
         } catch (error) {
             this.props.baseActions.logError(error);
         }
@@ -72,10 +72,9 @@ class Ideas extends React.Component<IProps, IState> {
                     renderItem={(item: IListItem) => (
                         <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.IDEA, params: item.item }); }}>
                             <View style={styles.itemRow}>
-                                <View style={[styles.column, {flexDirection: "row"}]}>
+                                <View style={[styles.column]}>
                                     <Text style={{ fontWeight: "bold" }}>{item.item.header}</Text>
-                                    <Text> - </Text>
-                                    <Text style={{ flex: 1, fontWeight: "bold" }}>{item.item.userName}</Text>
+                                    <Text>{item.item.userName}</Text>
                                 </View>
                                 <Icon name="md-chatboxes" size={25}>{item.item.messageCount}</Icon>
                             </View>
@@ -92,12 +91,14 @@ class Ideas extends React.Component<IProps, IState> {
 const styles = StyleSheet.create({
     itemRow: {
         flexDirection: "row",
-        margin: 10
+        margin: 10,
+        maxHeight: 60
     },
     header: {
         fontWeight: "bold",
         fontSize: 18,
-        margin: 10
+        margin: 10,
+        marginTop: 0
     },
     column: {
         marginLeft: 10,

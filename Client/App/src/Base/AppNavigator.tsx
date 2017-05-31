@@ -2,12 +2,9 @@ import React from "react";
 import { connect } from "react-redux";
 import { addNavigationHelpers, NavigationActions } from "react-navigation";
 import {
-    BackHandler,
-    Platform
+    BackHandler
 } from "react-native";
 import { bindActionCreators } from "redux";
-import GoogleFit from "react-native-google-fit";
-import AppleHealthKit from "react-native-apple-healthkit";
 
 import { StackNav } from "./Router";
 import { User, Fitness, Base } from "../Modules";
@@ -35,40 +32,9 @@ interface IState { }
 class AppWithNavigationState extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
-        this.initGoogleFit = this.initGoogleFit.bind(this);
-        this.initAppleHealth = this.initAppleHealth.bind(this);
     }
     shouldCloseApp(nav: INavObject) {
         return nav.index === 0;
-    }
-    async initGoogleFit() {
-        await GoogleFit.authorizeFit();
-        await GoogleFit.onAuthorize((result) => {
-            this.props.baseActions.logInfo(`GoogleFit.onAuthorize: ${JSON.stringify(result)}`);
-        });
-
-        await GoogleFit.observeSteps((step) => {
-            this.props.baseActions.logInfo(`GoogleFit.observeSteps: ${JSON.stringify(step)}`);
-        });
-    }
-    initAppleHealth() {
-        const options = {
-            permissions: {
-                read: ["StepCount"],
-                write: ["StepCount"]
-            }
-        };
-
-        return new Promise((resolve, reject) => {
-            AppleHealthKit.initHealthKit(options, (err, res) => {
-                if (err) {
-                    reject(err);
-                    this.props.baseActions.logError(`AppleHealthKit.initHealthKit: ${JSON.stringify(res)}`);
-                    return;
-                }
-                resolve(res);
-            });
-        });
     }
 
     async componentDidMount() {
@@ -97,11 +63,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 totalSteps: 0
             });
             this.props.baseActions.logInfo(JSON.stringify(response));
-            if (Platform.OS === "ios") {
-                await this.initAppleHealth();
-            } else {
-                await this.initGoogleFit();
-            }
+            
         } catch (error) {
             this.props.baseActions.logError(`Error: ${error}`);
         }
@@ -110,8 +72,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
         BackHandler.addEventListener("hardwareBackPress", this.onBackPress);
     }
     componentWillUnmount() {
-        GoogleFit.usubscribeListeners();
-        BackHandler.removeEventListener("hardwareBackPress", this.onBackPress);
+        // BackHandler.removeEventListener("hardwareBackPress", this.onBackPress);
     }
     onBackPress = () => {
         const { dispatch, nav } = this.props;
