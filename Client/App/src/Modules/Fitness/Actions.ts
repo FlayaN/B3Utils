@@ -5,7 +5,8 @@ export interface ActionsMap extends ActionCreatorsMapObject {
     setUsers(users: UserViewModel[]): Action<UserViewModel[]>;
     setInitialized(initialized: boolean): Action<boolean>;
     setUserActivities(userActivities: UserActivities): Action<UserActivities>;
-    setSelectedFitnessMode(selectedFitnessMode: string): Action<string>;
+    setSelectedFitnessMode(selectedFitnessMode: FitnessType): Action<FitnessType>;
+    setSelectedFilterMode(selectedFitnessMode: FilterType): Action<FilterType>;
 }
 
 export const Actions: ActionsMap = {
@@ -27,9 +28,15 @@ export const Actions: ActionsMap = {
             data: userActivities
         };
     },
-    setSelectedFitnessMode: (selectedFitnessMode: string): Action<string> => {
+    setSelectedFitnessMode: (selectedFitnessMode: FitnessType): Action<FitnessType> => {
         return {
             type: ActionTypes.SET_SELECTED_FITNESS_MODE,
+            data: selectedFitnessMode
+        };
+    },
+    setSelectedFilterMode: (selectedFitnessMode: FilterType): Action<FilterType> => {
+        return {
+            type: ActionTypes.SET_SELECTED_FILTER_MODE,
             data: selectedFitnessMode
         };
     }

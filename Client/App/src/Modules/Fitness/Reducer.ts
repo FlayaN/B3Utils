@@ -13,8 +13,11 @@ const Reducer = handleActions({
         const activitiesData = { ...state.activitiesData, [action.data.userId]: action.data.activities };
         return update(state, { activitiesData });
     },
-    [ActionTypes.SET_SELECTED_FITNESS_MODE]: (state: FitnessDef, action: Action<string>) => {
+    [ActionTypes.SET_SELECTED_FITNESS_MODE]: (state: FitnessDef, action: Action<FitnessType>) => {
         return update(state, { selectedFitnessMode: action.data });
+    },
+    [ActionTypes.SET_SELECTED_FILTER_MODE]: (state: FitnessDef, action: Action<FilterType>) => {
+        return update(state, { selectedFilterMode: action.data });
     }
 }, {});
 

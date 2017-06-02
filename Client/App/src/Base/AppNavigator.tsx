@@ -51,7 +51,7 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 imageUrl = responseJson.image.url;
             } catch (imageError) {
                 this.props.baseActions.logError(`Image error: ${imageError}`);
-                imageUrl = user.photoUrlTiny;
+                imageUrl = user.photoUrlTiny || "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg?sz=50";
             }
             this.props.userActions.setAvatar(imageUrl);
             const response = await AddUser({
@@ -59,11 +59,9 @@ class AppWithNavigationState extends React.Component<IProps, IState> {
                 avatarUrl: imageUrl,
                 lastRecordedDate: new Date().toISOString(),
                 userId: user.userID,
-                totalDistance: 0,
-                totalSteps: 0
+                amount: 0
             });
             this.props.baseActions.logInfo(JSON.stringify(response));
-            
         } catch (error) {
             this.props.baseActions.logError(`Error: ${error}`);
         }

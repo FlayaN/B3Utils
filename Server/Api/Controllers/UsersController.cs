@@ -1,9 +1,12 @@
-﻿using Api.Models.Database;
+﻿using Api.Infrastructure;
+using Api.Models.Database;
 using Api.Models.ViewModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,34 +29,60 @@ namespace Api.Controllers
             return new ObjectResult(user);
         }
 
-        [HttpGet("{userId}/activities/{type?}")]
+        /// <summary>
+        /// REMOVE ME SOON
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [HttpGet("{userId}/activities/{type}")]
         public IActionResult Activities(string userId, string type = "getDailyDistanceSamples")
         {
-            var user = _context.Users
-                .Include(x => x.Activities)
-                .FirstOrDefault(x => x.UserId == userId);
-            if (user != null)
-            {
-                var activities = user.Activities.Where(x => x.Type == type).Select(Mapper.Map<ActivityViewModel>).OrderByDescending(x => x.Date).ToList();
-                return new ObjectResult(activities);
-            }
-            return NotFound();
+            return RedirectToAction("Activities", "Activity", new { userId, type = OldSupport.PatchOld(type), filter = FilterType.All });
         }
 
+        [HttpGet("{type}/{filter}")]
+        public IActionResult GetUsers(FitnessType type, FilterType filter)
+        {
+            var result = new List<UserViewModel>();
+            var users = _context.Users
+                .Include(x => x.Activities).ToList();
+
+            foreach(var user in users)
+            {
+                var vmUser = Mapper.Map<UserViewModel>(user);
+                switch (filter)
+                {
+                    case FilterType.All:
+                        vmUser.Amount = user.Activities?.Where(x => x.Type == type).Sum(x => x.Amount) ?? 0;
+                        break;
+                    case FilterType.Month:
+                        vmUser.Amount = user.Activities?.Where(x => x.Type == type && x.Date.Month == DateTime.UtcNow.Month).Sum(x => x.Amount) ?? 0;
+                        break;
+                    case FilterType.Week:
+                        vmUser.Amount = user.Activities?.Where(x => x.Type == type && DateHelper.GetIso8601WeekOfYear(x.Date.Date) == DateHelper.GetIso8601WeekOfYear(DateTime.UtcNow)).Sum(x => x.Amount) ?? 0;
+                        break;
+                }
+
+                //Temp patch old clients
+                vmUser.TotalDistance = vmUser.Amount;
+                vmUser.TotalSteps = vmUser.Amount;
+
+                result.Add(vmUser);
+            }
+
+            return new ObjectResult(result.OrderByDescending(x => x.Amount).ToList());
+        }
+
+        /// <summary>
+        /// REMOVE ME SOON
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         [HttpGet("all/{type}")]
         public IActionResult GetUsers(string type)
         {
-            List<UserViewModel> users;
-            var usersQuery = _context.Users.Select(Mapper.Map<UserViewModel>);
-            if (type == "getDailyDistanceSamples")
-            {
-                users = usersQuery.OrderByDescending(x => x.TotalDistance).ToList();
-            }
-            else
-            {
-                users = usersQuery.OrderByDescending(x => x.TotalSteps).ToList();
-            }
-            return new ObjectResult(users);
+            return GetUsers(OldSupport.PatchOld(type), FilterType.All);
         }
 
         /// <summary>

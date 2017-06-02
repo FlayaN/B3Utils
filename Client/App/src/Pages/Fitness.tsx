@@ -9,29 +9,26 @@ import {
     StyleSheet,
     TouchableOpacity,
     RefreshControl,
-    Platform
+    Platform,
+    ViewStyle,
+    TextStyle,
+    ImageStyle
 } from "react-native";
-import { SegmentedControls } from "react-native-radio-buttons";
 
 import { Fitness, Base } from "../Modules";
 import { GetUsers, GetUser, AddActivity, getDailyDistance, getDailySteps } from "../Base/Utilities";
 import { Pages } from "../Base/Constants";
-import Icon from "react-native-vector-icons/Ionicons";
-import FaIcon from "react-native-vector-icons/FontAwesome";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import AppleHealthKit from "react-native-apple-healthkit-rn0.40";
 import GoogleFit from "react-native-google-fit";
+import { FitnessIcon, FitnessFilter } from "../Components";
 
 interface IStoreProps {
     email: string;
     users: UserViewModel[];
     userID: string;
-    fitnessMode: string;
-}
-
-interface IListItem {
-    index: number;
-    item: UserViewModel;
+    fitnessMode: FitnessType;
+    filterMode: FilterType;
 }
 
 interface IProps {
@@ -59,10 +56,6 @@ class FitnessPage extends React.Component<IProps, IState> {
         await GoogleFit.onAuthorize((result) => {
             this.props.baseActions.logInfo(`GoogleFit.onAuthorize: ${JSON.stringify(result)}`);
         });
-
-        // await GoogleFit.observeSteps((step) => {
-        //     this.props.baseActions.logInfo(`GoogleFit.observeSteps: ${JSON.stringify(step)}`);
-        // });
     }
     async initAppleHealth() {
         const HKTYPE = AppleHealthKit.Constants.Permissions;
@@ -87,9 +80,10 @@ class FitnessPage extends React.Component<IProps, IState> {
         });
     }
 
-    async updateData(type) {
+    async updateData(type: FitnessType, filter: FilterType) {
         try {
             this.setState({ refreshing: true });
+            this.props.fitnessActions.setUsers([]);
 
             if (Platform.OS === "ios") {
                 await this.initAppleHealth();
@@ -122,61 +116,47 @@ class FitnessPage extends React.Component<IProps, IState> {
             await activities.forEach(async (activity) => {
                 await AddActivity(activity);
             });
-            const correctType = type === "road" ? "getDailyDistanceSamples" : "getDailyStepCountSamples";
-            this.props.fitnessActions.setUsers(await GetUsers(correctType));
+            this.props.fitnessActions.setUsers(await GetUsers(type, filter));
         } catch (error) {
             this.props.baseActions.logError(error);
         }
         this.setState({ refreshing: false });
     }
     async componentDidMount() {
-        await this.updateData(this.props.store.fitnessMode);
+        const { fitnessMode, filterMode } = this.props.store;
+        await this.updateData(fitnessMode, filterMode);
     }
-    renderOption(option, selected) {
-        const style = selected ? { fontWeight: "bold", textAlign: "center" } : { textAlign: "center" };
-
-        if (option === "road") {
-            return <FaIcon style={style as any} name={option} size={20}></FaIcon>;
-        } else {
-            return <Icon style={style as any} name={option} size={20}></Icon>;
+    async componentDidUpdate(prevProps: IProps) {
+        const { fitnessMode, filterMode } = this.props.store;
+        if (prevProps.store.filterMode !== filterMode || prevProps.store.fitnessMode !== fitnessMode) {
+            await this.updateData(fitnessMode, filterMode);
         }
     }
-    async setSelectedOption(selectedOption) {
-        this.props.fitnessActions.setSelectedFitnessMode(selectedOption);
-        await this.updateData(selectedOption);
-    }
     render() {
-        let { users } = this.props.store;
+        let { users, fitnessMode, filterMode } = this.props.store;
         users = users.map(item => { return { ...item, key: item.userId }; });
         return (
-            <View style={{ flex: 1 }}>
-                <View style={{ width: 150, marginTop: 10, marginLeft: 10 }}>
-                    <SegmentedControls style={styles.itemRow} options={["road", "md-walk"]}
-                        onSelection={this.setSelectedOption.bind(this)}
-                        selectedOption={this.props.store.fitnessMode}
-                        renderOption={this.renderOption}
-                        renderContainer={(optionNodes) => <View>{optionNodes}</View>} />
-                </View>
+            <View style={styles.root}>
+                <FitnessFilter onChange={this.updateData} />
                 <SectionList
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
-                    refreshControl={<RefreshControl
-                        onRefresh={() => { this.updateData(this.props.store.fitnessMode); }}
-                        refreshing={this.state.refreshing} />}
-                    renderItem={(item: IListItem) => (
-                        <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS_USER, params: item.item }); }}>
+                    refreshControl={(
+                        <RefreshControl
+                            onRefresh={() => this.updateData(fitnessMode, filterMode)}
+                            refreshing={this.state.refreshing} />
+                    )}
+                    renderItem={({ item, index }: { item: UserViewModel, index: number }) => (
+                        <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS_USER, params: item }); }}>
                             <View style={styles.itemRow}>
-                                <Image style={{ width: 50, height: 50 }} source={{ uri: item.item.avatarUrl }} />
-                                {item.index === 0
-                                    && <MCIcon style={{ position: "absolute", marginLeft: 10, top: -15 }} size={30} color="gold" name="crown" />}
-                                <Text style={styles.column}>{item.item.name}</Text>
-                                {this.props.store.fitnessMode === "road" ?
-                                    <FaIcon name="road" size={20}>{(item.item.totalDistance / 1000).toFixed(2)}km</FaIcon> :
-                                    <Icon name="md-walk" size={20}>{item.item.totalSteps}</Icon>}
+                                <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
+                                {index === 0 && <MCIcon style={styles.crown} size={30} color="gold" name="crown" />}
+                                <Text style={styles.column}>{item.name}</Text>
+                                <FitnessIcon fitnessMode={fitnessMode} amount={item.amount} />
                             </View>
                         </TouchableOpacity>
                     )}
                     sections={[
-                        { data: users, key: this.props.store.fitnessMode === "road" ? "Sträcka" : "Steg" }
+                        { data: users, key: fitnessMode === FitnessType.Distance ? "Sträcka" : "Steg" }
                     ]} />
             </View>
         );
@@ -187,16 +167,42 @@ const styles = StyleSheet.create({
     itemRow: {
         flexDirection: "row",
         margin: 10
-    },
+    } as ViewStyle,
     header: {
         fontWeight: "bold",
         fontSize: 18,
         margin: 10
-    },
+    } as TextStyle,
     column: {
         marginLeft: 10,
         flex: 1
-    }
+    } as TextStyle,
+    crown: {
+        position: "absolute",
+        marginLeft: 10,
+        top: -15,
+        backgroundColor: "transparent"
+    } as TextStyle,
+    avatar: {
+        width: 50,
+        height: 50
+    } as ImageStyle,
+    modePicker: {
+        width: 100,
+        marginTop: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        flex: 1
+    } as ViewStyle,
+    filterPicker: {
+        marginTop: 10,
+        marginLeft: 10,
+        marginRight: 10,
+        flex: 1.5
+    } as ViewStyle,
+    root: {
+        flex: 1
+    } as ViewStyle
 });
 
 function mapStateToProps(state: StoreDef): IProps {
@@ -205,7 +211,8 @@ function mapStateToProps(state: StoreDef): IProps {
             email: state.user.googleUser.email,
             users: state.fitness.users,
             userID: state.user.googleUser.userID,
-            fitnessMode: state.fitness.selectedFitnessMode
+            fitnessMode: state.fitness.selectedFitnessMode,
+            filterMode: state.fitness.selectedFilterMode
         } as IStoreProps
     } as IProps;
 }

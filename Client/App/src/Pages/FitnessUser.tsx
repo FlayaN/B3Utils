@@ -12,12 +12,12 @@ import {
 
 import { GetActivities } from "../Base/Utilities";
 import { Fitness } from "../Modules";
-import Icon from "react-native-vector-icons/Ionicons";
-import FaIcon from "react-native-vector-icons/FontAwesome";
+import { FitnessIcon, FitnessFilter } from "../Components";
 
 interface IStoreProps {
     activities: ActivityViewModel[];
-    fitnessMode: string;
+    fitnessMode: FitnessType;
+    filterMode: FilterType;
 }
 
 interface IListItem {
@@ -36,37 +36,37 @@ class FitnessUser extends React.Component<IProps, {}> {
         super(props);
         this.updateData = this.updateData.bind(this);
     }
-    async updateData() {
+    async updateData(fitnessMode: FitnessType, filterMode: FilterType) {
         const userId = this.props.navigation.state.params.userId;
-        const correctType = this.props.store.fitnessMode === "road" ? "getDailyDistanceSamples" : "getDailyStepCountSamples";
-        const activities = await GetActivities(userId, correctType);
+        const activities = await GetActivities(userId, fitnessMode, filterMode);
         this.props.fitnessActions.setUserActivities({ userId: userId, activities: activities });
     }
     async componentDidMount() {
-        await this.updateData();
+        const { fitnessMode, filterMode } = this.props.store;
+        await this.updateData(fitnessMode, filterMode);
     }
     render() {
-        let { activities } = this.props.store;
-        if (activities !== undefined) {
-            activities = activities.map(item => { return { ...item, key: item.activityId }; });
+        let { activities, fitnessMode } = this.props.store;
+
+        if (activities === undefined) {
+            // tslint:disable-next-line:no-null-keyword
+            return null;
         }
+        activities = activities.map(item => { return { ...item, key: item.activityId }; });
         return (
             <View>
-                {this.props.store.activities &&
-                    <SectionList
-                        renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
-                        renderItem={(item: IListItem) => (
-                            <View style={styles.itemRow}>
-                                <Text style={styles.column}>{dateFormat(item.item.date, "yyyy-mm-dd dddd")}</Text>
-                                {this.props.store.fitnessMode === "road" ?
-                                    <FaIcon name={"road"} size={20}>{(item.item.amount / 1000).toFixed(2)}km</FaIcon> :
-                                    <Icon name="md-walk" size={20}>{item.item.amount}</Icon>}
-                            </View>
-                        )}
-                        sections={[
-                            { data: activities, key: "Senast" }
-                        ]} />
-                }
+                <FitnessFilter onChange={this.updateData} />
+                <SectionList
+                    renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
+                    renderItem={(item: IListItem) => (
+                        <View style={styles.itemRow}>
+                            <Text style={styles.column}>{dateFormat(item.item.date, "yyyy-mm-dd dddd")}</Text>
+                            <FitnessIcon fitnessMode={fitnessMode} amount={item.item.amount} />
+                        </View>
+                    )}
+                    sections={[
+                        { data: activities, key: "Senast" }
+                    ]} />
             </View>
         );
     }
@@ -92,7 +92,8 @@ function mapStateToProps(state: StoreDef, ownProps: IProps): IProps {
     return {
         store: {
             activities: state.fitness.activitiesData[ownProps.navigation.state.params.userId],
-            fitnessMode: state.fitness.selectedFitnessMode
+            fitnessMode: state.fitness.selectedFitnessMode,
+            filterMode: state.fitness.selectedFilterMode
         } as IStoreProps
     } as IProps;
 }

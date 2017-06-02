@@ -1,6 +1,7 @@
 ﻿using Api.Models.Database;
 using Api.Models.ViewModels;
 using AutoMapper;
+using System.Linq;
 
 namespace Api.Infrastructure
 {
@@ -11,7 +12,9 @@ namespace Api.Infrastructure
             CreateMap<User, UserViewModel>();
             CreateMap<UserViewModel, User>();
 
-            CreateMap<Activity, ActivityViewModel>();
+            CreateMap<Activity, ActivityViewModel>()
+                .ForMember(dest => dest.FitnessType, opts => opts.MapFrom(src => src.Type))
+                .ForMember(dest => dest.Type, opts => opts.MapFrom(src => OldSupport.PatchOld(src.Type)));
 
             CreateMap<IdeaViewModel, Idea>();
             CreateMap<Idea, IdeaViewModel>()

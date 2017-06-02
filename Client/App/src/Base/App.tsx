@@ -55,7 +55,8 @@ const defaultStore: StoreDef = {
         users: [],
         initialized: false,
         activitiesData: {},
-        selectedFitnessMode: "road"
+        selectedFitnessMode: FitnessType.Distance,
+        selectedFilterMode: FilterType.Month
     },
     idea: {
         ideas: [],

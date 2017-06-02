@@ -1,3 +1,14 @@
+declare const enum FitnessType {
+    Distance = 0,
+    Steps = 1
+}
+
+declare const enum FilterType {
+    All = 0,
+    Month = 1,
+    Week = 2
+}
+
 declare const enum EventType {
     Information = 0,
     Error = 1
@@ -23,7 +34,8 @@ interface FitnessDef {
     users: UserViewModel[];
     initialized: boolean;
     activitiesData: { [userId: string]: ActivityViewModel[] };
-    selectedFitnessMode: string;
+    selectedFitnessMode: FitnessType;
+    selectedFilterMode: FilterType;
 }
 
 interface IdeaDef {

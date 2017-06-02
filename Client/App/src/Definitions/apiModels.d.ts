@@ -2,7 +2,7 @@ interface ActivityViewModel {
     activityId: string;
     userId: string;
     date: string;
-    type: string;
+    fitnessType: FitnessType;
     amount: number;
 }
 
@@ -11,8 +11,7 @@ interface UserViewModel {
     name: string;
     lastRecordedDate: string;
     avatarUrl: string;
-    totalDistance: number;
-    totalSteps: number;
+    amount: number;
 }
 
 interface IdeaViewModel {

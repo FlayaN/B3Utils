@@ -47,7 +47,6 @@ namespace Api.Controllers
             return new OkObjectResult(idea);
         }
 
-
         [HttpDelete("{ideaId}")]
         public async Task<IActionResult> DeleteIdea(Guid ideaId)
         {

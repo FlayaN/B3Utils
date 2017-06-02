@@ -91,8 +91,8 @@ async function Delete(url: string): Promise<Response> {
     });
 }
 
-export async function GetUsers(type: string): Promise<UserViewModel[]> {
-    return Get<UserViewModel[]>(`api/v1/Users/all/${type}`);
+export async function GetUsers(type: FitnessType, filter: FilterType): Promise<UserViewModel[]> {
+    return Get<UserViewModel[]>(`api/v1/Users/${type}/${filter}`);
 }
 
 export async function GetUser(userId: string): Promise<UserViewModel> {
@@ -108,14 +108,8 @@ export async function GetMessages(ideaId: string): Promise<MessageViewModel[]> {
     return messages;
 }
 
-export async function GetActivities(userId: string, type: string): Promise<ActivityViewModel[]> {
-    let activities = await Get<ActivityViewModel[]>(`api/v1/Users/${userId}/activities/${type}`);
-
-    // activities.forEach((message) => {
-    //     message.date = convertUTCDateToLocalDate(new Date(message.date));
-    // });
-
-    return activities;
+export async function GetActivities(userId: string, type: FitnessType, filter: FilterType): Promise<ActivityViewModel[]> {
+    return await Get<ActivityViewModel[]>(`api/v1/Activity/forUser/${userId}/${type}/${filter}`);
 }
 
 export async function AddMessage(message: MessageViewModel): Promise<Response> {
@@ -138,19 +132,19 @@ export async function AddIdea(idea: IdeaViewModel): Promise<Response> {
     return Post("api/v1/Ideas", idea);
 }
 
-function asyncDateLoop(startDate: Date, functionToLoop: Function, callback: Function, ) {
+function asyncDateLoop(startDate: Date, functionToLoop: Function, callback: Function) {
     let currDate = startDate;
 
     const loop = () => {
-        console.log(currDate)
+        console.log(currDate);
         currDate = addDays(currDate, 1);
-        if(currDate > new Date()) {
-            console.log("SDASDASDASDASD")
+        if (currDate > new Date()) {
+            console.log("SDASDASDASDASD");
             callback();
             return;
         }
         functionToLoop(loop, currDate);
-    }
+    };
     loop();
 }
 
@@ -175,22 +169,22 @@ export function getDailyDistance(startDate: Date, endDate: Date, userId: string)
         if (Platform.OS === "ios") {
             asyncDateLoop(startDate, (loop, date) => {
                 console.log(date);
-                AppleHealthKit.getDistanceWalkingRunning({startDate: date.toISOString()}, (err, res) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    console.log("result", res);
-                    activities.push({
-                        activityId: "00000000-0000-0000-0000-000000000000",
-                        userId: userId,
-                        amount: res.value,
-                        date: moment(res.startDate).format(),
-                        type: "getDailyDistanceSamples"
-                    });
-                    loop();
-                }
-            });
-        }, () => {console.log("activites", activities);resolve(activities); });
+                AppleHealthKit.getDistanceWalkingRunning({ startDate: date.toISOString() }, (err, res) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        console.log("result", res);
+                        activities.push({
+                            activityId: "00000000-0000-0000-0000-000000000000",
+                            userId: userId,
+                            amount: res.value,
+                            date: moment(res.startDate).format(),
+                            fitnessType: FitnessType.Distance
+                        });
+                        loop();
+                    }
+                });
+            }, () => { console.log("activites", activities); resolve(activities); });
         } else {
             GoogleFit.getDailyDistanceSamples({
                 startDate: startDate.toISOString(),
@@ -203,7 +197,7 @@ export function getDailyDistance(startDate: Date, endDate: Date, userId: string)
                             userId: userId,
                             amount: item.distance,
                             date: moment(item.endDate).format(),
-                            type: "getDailyDistanceSamples"
+                            fitnessType: FitnessType.Distance
                         });
                     });
                     resolve(activities);
@@ -219,8 +213,8 @@ export function getDailySteps(startDate: Date, endDate: Date, userId: string): P
     return new Promise((resolve, reject) => {
         let activities: ActivityViewModel[] = [];
         if (Platform.OS === "ios") {
-            AppleHealthKit.getDailyStepCountSamples({startDate: startDate.toISOString()}, (err, res) => {
-                if(err) {
+            AppleHealthKit.getDailyStepCountSamples({ startDate: startDate.toISOString() }, (err, res) => {
+                if (err) {
                     reject(err.message);
                 } else {
                     res.forEach(item => {
@@ -229,7 +223,7 @@ export function getDailySteps(startDate: Date, endDate: Date, userId: string): P
                             userId: userId,
                             amount: item.value,
                             date: moment(item.startDate).format(),
-                            type: "getDailyStepCountSamples"
+                            fitnessType: FitnessType.Steps
                         });
                     });
                     resolve(activities);
@@ -247,7 +241,7 @@ export function getDailySteps(startDate: Date, endDate: Date, userId: string): P
                             userId: userId,
                             amount: item.steps,
                             date: moment(item.endDate).format(),
-                            type: "getDailyStepCountSamples"
+                            fitnessType: FitnessType.Steps
                         });
                     });
                     resolve(activities);

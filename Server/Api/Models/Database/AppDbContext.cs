@@ -63,8 +63,6 @@ namespace Api.Models.Database
         [DataType(DataType.Date)]
         public DateTime LastRecordedDate { get; set; }
         public string AvatarUrl { get; set; }
-        public double TotalDistance { get; set; }
-        public double TotalSteps { get; set; }
         public List<Activity> Activities { get; set; }
         public List<Idea> Ideas { get; set; }
         public List<Message> Messages { get; set; }
@@ -76,10 +74,16 @@ namespace Api.Models.Database
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid ActivityId { get; set; }
         public DateTimeOffset Date { get; set; }
-        public string Type { get; set; }
+        public FitnessType Type { get; set; }
         public double Amount { get; set; }
         public string UserId { get; set; }
         public User User { get; set; }
+    }
+
+    public enum FitnessType
+    {
+        Distance = 0,
+        Steps = 1
     }
 
     public class Idea
