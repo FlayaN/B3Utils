@@ -36,6 +36,7 @@ interface FitnessDef {
     activitiesData: { [userId: string]: ActivityViewModel[] };
     selectedFitnessMode: FitnessType;
     selectedFilterMode: FilterType;
+    awards: AwardViewModel[];
 }
 
 interface IdeaDef {

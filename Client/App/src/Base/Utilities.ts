@@ -132,6 +132,10 @@ export async function AddIdea(idea: IdeaViewModel): Promise<Response> {
     return Post("api/v1/Ideas", idea);
 }
 
+export async function GetAwards(fitnessType: FitnessType, filterType: FilterType): Promise<AwardViewModel[]> {
+    return Get<AwardViewModel[]>(`api/v1/Awards/${fitnessType}/${filterType}`);
+}
+
 function asyncDateLoop(startDate: Date, functionToLoop: Function, callback: Function) {
     let currDate = startDate;
 

@@ -18,11 +18,7 @@ interface IStoreProps {
     activities: ActivityViewModel[];
     fitnessMode: FitnessType;
     filterMode: FilterType;
-}
-
-interface IListItem {
-    index: number;
-    item: ActivityViewModel;
+    awards: AwardViewModel[];
 }
 
 interface IProps {
@@ -46,26 +42,38 @@ class FitnessUser extends React.Component<IProps, {}> {
         await this.updateData(fitnessMode, filterMode);
     }
     render() {
-        let { activities, fitnessMode } = this.props.store;
+        let { activities, fitnessMode, awards } = this.props.store;
 
-        if (activities === undefined) {
+        if (activities === undefined || awards === undefined) {
             // tslint:disable-next-line:no-null-keyword
-            return null;
+            return null; // Todo investigate if you can use undefined
         }
-        activities = activities.map(item => { return { ...item, key: item.activityId }; });
         return (
             <View>
                 <FitnessFilter onChange={this.updateData} />
                 <SectionList
-                    renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
-                    renderItem={(item: IListItem) => (
-                        <View style={styles.itemRow}>
-                            <Text style={styles.column}>{dateFormat(item.item.date, "yyyy-mm-dd dddd")}</Text>
-                            <FitnessIcon fitnessMode={fitnessMode} amount={item.item.amount} />
-                        </View>
-                    )}
+                    renderSectionHeader={({ section }) => section.data.length > 0 && <Text style={styles.header}>{section.key}</Text>}
+                    keyExtractor={(item: ActivityViewModel & AwardViewModel) => item.activityId || item.date}
                     sections={[
-                        { data: activities, key: "Senast" }
+                        {
+                            data: awards,
+                            renderItem: ({ item }: { item: AwardViewModel }) => (
+                                <View style={styles.itemRow}>
+                                    <Text style={styles.column}>{item.description}</Text>
+                                    <FitnessIcon fitnessMode={fitnessMode} amount={Number(item.value)} />
+                                </View>),
+                            key: "Utmärkelser"
+                        },
+                        {
+                            data: activities,
+                                renderItem: ({ item }: { item: ActivityViewModel }) => (
+                                <View style={styles.itemRow}>
+                                    <Text style={styles.column}>{dateFormat(item.date, "yyyy-mm-dd dddd")}</Text>
+                                    <FitnessIcon fitnessMode={fitnessMode} amount={item.amount} />
+                                </View>
+                            ),
+                            key: "Senast"
+                        }
                     ]} />
             </View>
         );
@@ -93,7 +101,8 @@ function mapStateToProps(state: StoreDef, ownProps: IProps): IProps {
         store: {
             activities: state.fitness.activitiesData[ownProps.navigation.state.params.userId],
             fitnessMode: state.fitness.selectedFitnessMode,
-            filterMode: state.fitness.selectedFilterMode
+            filterMode: state.fitness.selectedFilterMode,
+            awards: state.fitness.awards.filter(x => x.userId === ownProps.navigation.state.params.userId)
         } as IStoreProps
     } as IProps;
 }

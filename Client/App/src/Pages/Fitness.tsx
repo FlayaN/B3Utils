@@ -16,12 +16,12 @@ import {
 } from "react-native";
 
 import { Fitness, Base } from "../Modules";
-import { GetUsers, GetUser, AddActivity, getDailyDistance, getDailySteps } from "../Base/Utilities";
+import { GetUsers, GetUser, AddActivity, getDailyDistance, getDailySteps, GetAwards } from "../Base/Utilities";
 import { Pages } from "../Base/Constants";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import AppleHealthKit from "react-native-apple-healthkit-rn0.40";
 import GoogleFit from "react-native-google-fit";
-import { FitnessIcon, FitnessFilter } from "../Components";
+import { FitnessIcon, FitnessFilter, AwardIcon } from "../Components";
 
 interface IStoreProps {
     email: string;
@@ -29,6 +29,7 @@ interface IStoreProps {
     userID: string;
     fitnessMode: FitnessType;
     filterMode: FilterType;
+    awards: AwardViewModel[];
 }
 
 interface IProps {
@@ -117,6 +118,7 @@ class FitnessPage extends React.Component<IProps, IState> {
                 await AddActivity(activity);
             });
             this.props.fitnessActions.setUsers(await GetUsers(type, filter));
+            this.props.fitnessActions.setAwards(await GetAwards(type, filter));
         } catch (error) {
             this.props.baseActions.logError(error);
         }
@@ -133,13 +135,13 @@ class FitnessPage extends React.Component<IProps, IState> {
         }
     }
     render() {
-        let { users, fitnessMode, filterMode } = this.props.store;
-        users = users.map(item => { return { ...item, key: item.userId }; });
+        const { users, fitnessMode, filterMode, awards } = this.props.store;
         return (
             <View style={styles.root}>
                 <FitnessFilter onChange={this.updateData} />
                 <SectionList
                     renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
+                    keyExtractor={(x: ActivityViewModel) => x.userId}
                     refreshControl={(
                         <RefreshControl
                             onRefresh={() => this.updateData(fitnessMode, filterMode)}
@@ -151,6 +153,7 @@ class FitnessPage extends React.Component<IProps, IState> {
                                 <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
                                 {index === 0 && <MCIcon style={styles.crown} size={30} color="gold" name="crown" />}
                                 <Text style={styles.column}>{item.name}</Text>
+                                <AwardIcon count={awards.filter((award: AwardViewModel) => award.userId === item.userId).length} />
                                 <FitnessIcon fitnessMode={fitnessMode} amount={item.amount} />
                             </View>
                         </TouchableOpacity>
@@ -212,7 +215,8 @@ function mapStateToProps(state: StoreDef): IProps {
             users: state.fitness.users,
             userID: state.user.googleUser.userID,
             fitnessMode: state.fitness.selectedFitnessMode,
-            filterMode: state.fitness.selectedFilterMode
+            filterMode: state.fitness.selectedFilterMode,
+            awards: state.fitness.awards
         } as IStoreProps
     } as IProps;
 }

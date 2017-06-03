@@ -48,7 +48,7 @@ namespace Api.Controllers
             var users = _context.Users
                 .Include(x => x.Activities).ToList();
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 var vmUser = Mapper.Map<UserViewModel>(user);
                 switch (filter)

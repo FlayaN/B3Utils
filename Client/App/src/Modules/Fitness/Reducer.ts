@@ -18,6 +18,9 @@ const Reducer = handleActions({
     },
     [ActionTypes.SET_SELECTED_FILTER_MODE]: (state: FitnessDef, action: Action<FilterType>) => {
         return update(state, { selectedFilterMode: action.data });
+    },
+    [ActionTypes.SET_AWARDS]: (state: FitnessDef, action: Action<AwardViewModel[]>) => {
+        return update(state, { awards: action.data });
     }
 }, {});
 

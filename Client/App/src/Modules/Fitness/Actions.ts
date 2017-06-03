@@ -7,6 +7,7 @@ export interface ActionsMap extends ActionCreatorsMapObject {
     setUserActivities(userActivities: UserActivities): Action<UserActivities>;
     setSelectedFitnessMode(selectedFitnessMode: FitnessType): Action<FitnessType>;
     setSelectedFilterMode(selectedFitnessMode: FilterType): Action<FilterType>;
+    setAwards(awards: AwardViewModel[]): Action<AwardViewModel[]>;
 }
 
 export const Actions: ActionsMap = {
@@ -38,6 +39,12 @@ export const Actions: ActionsMap = {
         return {
             type: ActionTypes.SET_SELECTED_FILTER_MODE,
             data: selectedFitnessMode
+        };
+    },
+    setAwards: (awards: AwardViewModel[]): Action<AwardViewModel[]> => {
+        return {
+            type: ActionTypes.SET_AWARDS,
+            data: awards
         };
     }
 };

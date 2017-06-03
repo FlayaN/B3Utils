@@ -32,3 +32,19 @@ interface MessageViewModel {
     text: string;
     timeStamp: string;
 }
+
+interface AwardViewModel {
+    type: AwardType;
+    userId: string;
+    date: string;
+    description: string;
+    value: string;
+}
+
+declare const enum AwardType {
+    Other = 0,
+    TopMonthSteps = 1,
+    TopWeekSteps = 2,
+    TopMonthDistance = 3,
+    TopWeekDistance = 4
+}
