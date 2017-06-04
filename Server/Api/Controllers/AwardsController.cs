@@ -51,17 +51,23 @@ namespace Api.Controllers
                             .GroupBy(x => x.UserId)
                             .Select(x => new { UserId = x.Key, TotalAmount = x.Sum(y => y.Amount) })
                             .OrderByDescending(x => x.TotalAmount)
-                            .FirstOrDefault();
+                            .Take(3);
                         if (res != null)
                         {
-                            awards.Add(new AwardViewModel
+                            int placement = 1;
+                            foreach(var award in res)
                             {
-                                UserId = res.UserId,
-                                Description = fitnessType == FitnessType.Distance ? $"Längst sträcka månad: {date.Month}" : $"Mest steg månad: {date.Month}",
-                                Value = res.TotalAmount.ToString(),
-                                Date = date,
-                                Type = fitnessType == FitnessType.Distance ? AwardType.TopMonthDistance : AwardType.TopMonthSteps
-                            });
+                                awards.Add(new AwardViewModel
+                                {
+                                    AwardId = Guid.NewGuid(),
+                                    UserId = award.UserId,
+                                    Description = fitnessType == FitnessType.Distance ? $"Sträcka månad: {date.Month}" : $"Steg månad: {date.Month}",
+                                    Value = award.TotalAmount.ToString(),
+                                    Date = date,
+                                    Type = fitnessType == FitnessType.Distance ? AwardType.MonthDistance : AwardType.MonthSteps,
+                                    Placement = placement++
+                                });
+                            }
                         }
                     }
                     break;
@@ -75,17 +81,23 @@ namespace Api.Controllers
                             .GroupBy(x => x.UserId)
                             .Select(x => new { UserId = x.Key, TotalAmount = x.Sum(y => y.Amount) })
                             .OrderByDescending(x => x.TotalAmount)
-                            .FirstOrDefault();
+                            .Take(3);
                         if (res != null)
                         {
-                            awards.Add(new AwardViewModel
+                            int placement = 1;
+                            foreach (var award in res)
                             {
-                                UserId = res.UserId,
-                                Description = fitnessType == FitnessType.Distance ? $"Längst sträcka vecka: {week}" : $"Mest steg vecka: {week}",
-                                Value = res.TotalAmount.ToString(),
-                                Date = date,
-                                Type = fitnessType == FitnessType.Distance ? AwardType.TopWeekDistance : AwardType.TopWeekSteps
-                            });
+                                awards.Add(new AwardViewModel
+                                {
+                                    AwardId = Guid.NewGuid(),
+                                    UserId = award.UserId,
+                                    Description = fitnessType == FitnessType.Distance ? $"Sträcka vecka: {week}" : $"Steg vecka: {week}",
+                                    Value = award.TotalAmount.ToString(),
+                                    Date = date,
+                                    Type = fitnessType == FitnessType.Distance ? AwardType.WeekDistance : AwardType.WeekSteps,
+                                    Placement = placement++
+                                });
+                            }
                         }
                     }
                     break;

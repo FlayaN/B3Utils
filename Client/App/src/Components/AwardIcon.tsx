@@ -2,17 +2,19 @@ import React from "react";
 import FaIcon from "react-native-vector-icons/FontAwesome";
 
 interface IProps {
-    count: number;
+    content?: string;
+    placement: number;
 }
 
-const AwardIcon = (props: IProps) => {
-    const { count } = props;
-    if (count === 0) {
-        // tslint:disable-next-line:no-null-keyword
-        return null;
+const AwardIcons = (props: IProps) => {
+    const { placement, content } = props;
+    if (placement === 1) {
+        return <FaIcon name={"star"} color={"gold"} size={20}>{content}</FaIcon>;
+    } else if (placement === 2) {
+        return <FaIcon name={"star"} color={"silver"} size={20}>{content}</FaIcon>;
+    } else {
+        return <FaIcon name={"star"} color={"#CD7F32"} size={20}>{content}</FaIcon>;
     }
-    return <FaIcon name={"star"} color={"gold"} size={20}>{count}</FaIcon>;
-    // return <Text>{award.extra}</Text>;
 };
 
-export default AwardIcon;
+export default AwardIcons;

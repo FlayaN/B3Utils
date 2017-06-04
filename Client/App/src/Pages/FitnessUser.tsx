@@ -12,7 +12,7 @@ import {
 
 import { GetActivities } from "../Base/Utilities";
 import { Fitness } from "../Modules";
-import { FitnessIcon, FitnessFilter } from "../Components";
+import { FitnessIcon, FitnessFilter, AwardIcon } from "../Components";
 
 interface IStoreProps {
     activities: ActivityViewModel[];
@@ -53,12 +53,13 @@ class FitnessUser extends React.Component<IProps, {}> {
                 <FitnessFilter onChange={this.updateData} />
                 <SectionList
                     renderSectionHeader={({ section }) => section.data.length > 0 && <Text style={styles.header}>{section.key}</Text>}
-                    keyExtractor={(item: ActivityViewModel & AwardViewModel) => item.activityId || item.date}
+                    keyExtractor={(item: ActivityViewModel & AwardViewModel) => item.activityId || item.awardId}
                     sections={[
                         {
                             data: awards,
                             renderItem: ({ item }: { item: AwardViewModel }) => (
                                 <View style={styles.itemRow}>
+                                    <AwardIcon placement={item.placement} />
                                     <Text style={styles.column}>{item.description}</Text>
                                     <FitnessIcon fitnessMode={fitnessMode} amount={Number(item.value)} />
                                 </View>),

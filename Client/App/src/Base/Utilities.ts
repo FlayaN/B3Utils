@@ -152,6 +152,29 @@ function asyncDateLoop(startDate: Date, functionToLoop: Function, callback: Func
     loop();
 }
 
+const SI_PREFIXES = ["", "k", "M", "G", "T", "P", "E"];
+
+/// https://stackoverflow.com/a/40724354
+export function abbreviateNumber(number: number) {
+
+    // what tier? (determines SI prefix)
+    // tslint:disable-next-line:no-bitwise
+    const tier = Math.log10(number) / 3 | 0;
+
+    // if zero, we don't need a prefix
+    if (tier === 0) return number;
+
+    // get prefix and determine scale
+    const prefix = SI_PREFIXES[tier];
+    const scale = Math.pow(10, tier * 3);
+
+    // scale the number
+    const scaled = number / scale;
+
+    // format number and add prefix as suffix
+    return scaled.toFixed(1) + prefix;
+}
+
 // async function AppleGetDistance(startDate: Date, endDate: Date) : Promise<any> {
 //     return new Promise(async (resolve, reject) => {
 //         await getDates(startDate, endDate).forEach(date => {

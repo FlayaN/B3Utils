@@ -34,17 +34,19 @@ interface MessageViewModel {
 }
 
 interface AwardViewModel {
+    awardId: string;
     type: AwardType;
     userId: string;
     date: string;
     description: string;
     value: string;
+    placement: number;
 }
 
 declare const enum AwardType {
     Other = 0,
-    TopMonthSteps = 1,
-    TopWeekSteps = 2,
-    TopMonthDistance = 3,
-    TopWeekDistance = 4
+    MonthSteps = 1,
+    WeekSteps = 2,
+    MonthDistance = 3,
+    WeekDistance = 4
 }

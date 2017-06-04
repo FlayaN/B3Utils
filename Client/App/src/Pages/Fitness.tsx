@@ -21,7 +21,7 @@ import { Pages } from "../Base/Constants";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import AppleHealthKit from "react-native-apple-healthkit-rn0.40";
 import GoogleFit from "react-native-google-fit";
-import { FitnessIcon, FitnessFilter, AwardIcon } from "../Components";
+import { FitnessIcon, FitnessFilter, AwardIcons } from "../Components";
 
 interface IStoreProps {
     email: string;
@@ -85,6 +85,7 @@ class FitnessPage extends React.Component<IProps, IState> {
         try {
             this.setState({ refreshing: true });
             this.props.fitnessActions.setUsers([]);
+            this.props.fitnessActions.setAwards([]);
 
             if (Platform.OS === "ios") {
                 await this.initAppleHealth();
@@ -118,7 +119,15 @@ class FitnessPage extends React.Component<IProps, IState> {
                 await AddActivity(activity);
             });
             this.props.fitnessActions.setUsers(await GetUsers(type, filter));
-            this.props.fitnessActions.setAwards(await GetAwards(type, filter));
+            if (filter === FilterType.All) {
+
+                let awards = await GetAwards(type, FilterType.Week);
+                awards = awards.concat(await GetAwards(type, FilterType.Month));
+
+                this.props.fitnessActions.setAwards(awards);
+            } else {
+                this.props.fitnessActions.setAwards(await GetAwards(type, filter));
+            }
         } catch (error) {
             this.props.baseActions.logError(error);
         }
@@ -153,7 +162,7 @@ class FitnessPage extends React.Component<IProps, IState> {
                                 <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
                                 {index === 0 && <MCIcon style={styles.crown} size={30} color="gold" name="crown" />}
                                 <Text style={styles.column}>{item.name}</Text>
-                                <AwardIcon count={awards.filter((award: AwardViewModel) => award.userId === item.userId).length} />
+                                <AwardIcons awards={awards.filter((award: AwardViewModel) => award.userId === item.userId)} />
                                 <FitnessIcon fitnessMode={fitnessMode} amount={item.amount} />
                             </View>
                         </TouchableOpacity>
