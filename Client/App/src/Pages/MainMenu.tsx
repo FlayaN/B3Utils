@@ -27,10 +27,10 @@ class MainMenu extends React.Component<IProps, {}> {
     render() {
         return (
             <View style={styles.root}>
-                <View style={styles.healthContainer}>
+                <View style={styles.rowContainer}>
                     <View style={{ flex: 1 }}>
                         <TouchableOpacity
-                            style={styles.healthButton}
+                            style={[styles.healthButton, { backgroundColor: !this.props.store.fitnessInitialized ? "grey" : "skyblue" }]}
                             disabled={!this.props.store.fitnessInitialized}
                             onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS }); }} >
                             <Text style={{ fontSize: 25, fontWeight: "bold" }}>Hälsa</Text>
@@ -41,6 +41,15 @@ class MainMenu extends React.Component<IProps, {}> {
                             style={styles.ideaButton}
                             onPress={() => { this.props.baseActions.navigate({ to: Pages.IDEAS }); }} >
                             <Text style={{ fontSize: 25, fontWeight: "bold" }}>Idéer</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+                <View style={styles.rowContainer}>
+                    <View style={{ flex: 1 }}>
+                        <TouchableOpacity
+                            style={styles.referenceButton}
+                            onPress={() => { this.props.baseActions.navigate({ to: Pages.COMPANIES }); }} >
+                            <Text style={{ fontSize: 25, fontWeight: "bold" }}>Kontaktnät</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -64,7 +73,8 @@ const styles = StyleSheet.create({
     healthButton: {
         flex: 1,
         justifyContent: "center",
-        alignItems: "center"
+        alignItems: "center",
+        backgroundColor: "skyblue"
     },
     ideaButton: {
         flex: 1,
@@ -72,9 +82,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "powderblue"
     },
-    healthContainer: {
+    referenceButton: {
         flex: 1,
-        backgroundColor: "skyblue",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "dodgerblue"
+    },
+    rowContainer: {
+        flex: 1,
         flexDirection: "row"
     },
     root: {

@@ -3,17 +3,12 @@ import { connect } from "react-redux";
 import {
     View,
     SectionList,
-    Text,
-    StyleSheet
+    Text
 } from "react-native";
+import { baseStyles } from "../Base/Styles";
 
 interface IStoreProps {
     events: IEvent[];
-}
-
-interface IListItem {
-    index: number;
-    item: IEvent;
 }
 
 interface IProps {
@@ -25,14 +20,17 @@ class EventLog extends React.Component<IProps, {}> {
         super(props);
     }
     render() {
-        const events = this.props.store.events.map((item, index) => { return {...item, key: index}; });
+        const { events } = this.props.store;
         return (
-            <View style={{flex: 1}}>
+            <View style={{ flex: 1 }}>
                 <SectionList
-                    renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
-                    renderItem={(item: IListItem) => (
-                        <View style={styles.itemRow}>
-                            <Text style={[styles.column, {color: item.item.type === EventType.Error ? "red" : "black"}]}>{item.item.message}</Text>
+                    renderSectionHeader={({ section }) => <Text style={baseStyles.header}>{section.key}</Text>}
+                    keyExtractor={(_item, index) => index.toString()}
+                    renderItem={({ item }: { item: IEvent }) => (
+                        <View style={{ flexDirection: "row", margin: 10 }}>
+                            <Text style={[baseStyles.column, { color: item.type === EventType.Error ? "red" : "black" }]}>
+                                {item.message}
+                            </Text>
                         </View>
                     )}
                     sections={[
@@ -42,21 +40,6 @@ class EventLog extends React.Component<IProps, {}> {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    itemRow: {
-        flexDirection: "row",
-        margin: 10
-    },
-    header: {
-        fontWeight: "bold",
-        fontSize: 18,
-        margin: 10
-    },
-    column: {
-        marginLeft: 10
-    }
-});
 
 function mapStateToProps(state: StoreDef): IProps {
     return {

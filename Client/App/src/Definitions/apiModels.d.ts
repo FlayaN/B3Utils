@@ -43,6 +43,23 @@ interface AwardViewModel {
     placement: number;
 }
 
+interface CompanyReferenceViewModel {
+    id?: string;
+    name: string;
+    city: string;
+    description: string;
+}
+
+interface CompanyPersonReferenceViewModel {
+    id?: string;
+    name: string;
+    position: string;
+    relation: number;
+    description: string;
+    companyId: string;
+    userId: string;
+}
+
 declare const enum AwardType {
     Other = 0,
     MonthSteps = 1,

@@ -24,6 +24,9 @@ namespace Api.Infrastructure
             CreateMap<MessageViewModel, Message>();
             CreateMap<Message, MessageViewModel>()
                 .ForMember(dest => dest.UserName, opts => opts.MapFrom(src => src.User.Name));
+
+            CreateMap<CompanyReference, CompanyReferenceViewModel>();
+            CreateMap<CompanyPersonReference, CompanyPersonReferenceViewModel>();
         }
     }
 }

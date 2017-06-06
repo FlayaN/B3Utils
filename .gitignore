@@ -300,3 +300,4 @@ _Pvt_Extensions
 index.android.bundle
 classpath.txt
 index.android.map
+debuggerWorker.js

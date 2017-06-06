@@ -6,7 +6,7 @@ import codePush from "react-native-code-push";
 import { composeWithDevTools } from "remote-redux-devtools";
 
 import { StackNav, TabNav } from "./Router";
-import { User, Base, Fitness, Idea } from "../Modules";
+import { User, Base, Fitness, Idea, Reference } from "../Modules";
 import {
     Pages,
     Modules
@@ -25,6 +25,7 @@ const rootReducer = combineReducers<StoreDef>({
     [Modules.base]: Base.Reducer,
     [Modules.fitness]: Fitness.Reducer,
     [Modules.idea]: Idea.Reducer,
+    [Modules.reference]: Reference.Reducer,
     form: formReducer
 });
 
@@ -62,6 +63,10 @@ const defaultStore: StoreDef = {
     idea: {
         ideas: [],
         ideaMessages: {}
+    },
+    reference: {
+        companies: [],
+        companyPersons: {}
     }
 };
 

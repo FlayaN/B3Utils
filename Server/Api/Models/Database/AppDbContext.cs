@@ -19,33 +19,87 @@ namespace Api.Models.Database
         public DbSet<Activity> Activities { get; set; }
         public DbSet<Idea> Ideas { get; set; }
         public DbSet<Message> Messages { get; set; }
+        public DbSet<CompanyReference> CompanyReferences { get; set; }
+        public DbSet<CompanyPersonReference> CompanyPersonReferences { get; set; }
+        public DbSet<UserPersonMap> UserPersonMaps { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // User
             modelBuilder.Entity<Activity>()
                 .HasOne(p => p.User)
                 .WithMany(b => b.Activities)
                 .HasForeignKey(p => p.UserId)
                 .HasConstraintName("ForeignKey_Activity_User");
+
             modelBuilder.Entity<Idea>()
                 .HasOne(p => p.User)
                 .WithMany(b => b.Ideas)
                 .HasForeignKey(p => p.UserId)
                 .HasConstraintName("ForeignKey_Idea_User");
+
+            modelBuilder.Entity<UserPersonMap>()
+                .HasKey(t => new { t.UserId, t.ReferencePersonId });
+            modelBuilder.Entity<UserPersonMap>()
+                .HasOne(p => p.User)
+                .WithMany(b => b.UserPersonMaps)
+                .HasForeignKey(p => p.UserId);
+            modelBuilder.Entity<UserPersonMap>()
+                .HasOne(p => p.ReferencePerson)
+                .WithMany(b => b.UserPersonMaps)
+                .HasForeignKey(p => p.ReferencePersonId);
+            
+            modelBuilder.Entity<Message>()
+                .HasOne(p => p.Idea)
+                .WithMany(b => b.Messages)
+                .HasForeignKey(p => p.IdeaId)
+                .HasConstraintName("ForeignKey_Message_Idea");
             modelBuilder.Entity<Message>()
                 .HasOne(p => p.User)
                 .WithMany(b => b.Messages)
                 .HasForeignKey(p => p.UserId)
                 .HasConstraintName("ForeignKey_Message_User");
 
-            // Idea
-            modelBuilder.Entity<Message>()
-                .HasOne(p => p.Idea)
-                .WithMany(b => b.Messages)
-                .HasForeignKey(p => p.IdeaId)
-                .HasConstraintName("ForeignKey_Message_Idea");
+            modelBuilder.Entity<CompanyPersonReference>()
+                .HasOne(p => p.Company)
+                .WithMany(b => b.Persons)
+                .HasForeignKey(p => p.CompanyId);
         }
+    }
+
+    public class CompanyReference
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string City { get; set; }
+        public string Description { get; set; }
+
+        public List<CompanyPersonReference> Persons { get; set; }
+    }
+
+    public class CompanyPersonReference
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Position { get; set; }
+        public int Relation { get; set; }
+        public string Description { get; set; }
+        public Guid CompanyId { get; set; }
+
+        public CompanyReference Company { get; set; }
+        public List<UserPersonMap> UserPersonMaps { get; set; }
+    }
+
+    public class UserPersonMap
+    {
+        public string UserId { get; set; }
+        public User User { get; set; }
+
+        public Guid ReferencePersonId { get; set; }
+        public CompanyPersonReference ReferencePerson { get; set; }
     }
 
     public class User
@@ -66,6 +120,7 @@ namespace Api.Models.Database
         public List<Activity> Activities { get; set; }
         public List<Idea> Ideas { get; set; }
         public List<Message> Messages { get; set; }
+        public List<UserPersonMap> UserPersonMaps { get; set; }
     }
 
     public class Activity

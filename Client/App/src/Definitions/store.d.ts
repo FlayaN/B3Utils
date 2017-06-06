@@ -44,9 +44,15 @@ interface IdeaDef {
     ideaMessages: { [ideaId: string]: MessageViewModel[] };
 }
 
+interface ReferenceDef {
+    companies: CompanyReferenceViewModel[];
+    companyPersons: { [companyId: string]: CompanyPersonReferenceViewModel[] };
+}
+
 interface StoreDef {
     user: UserDef;
     base: BaseDef;
     fitness: FitnessDef;
     idea: IdeaDef;
+    reference: ReferenceDef;
 }

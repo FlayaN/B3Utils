@@ -6,13 +6,13 @@ import dateFormat from "dateformat";
 import {
     View,
     Text,
-    SectionList,
-    StyleSheet
+    SectionList
 } from "react-native";
 
-import { GetActivities } from "../Base/Utilities";
-import { Fitness } from "../Modules";
-import { FitnessIcon, FitnessFilter, AwardIcon } from "../Components";
+import { GetActivities } from "../../Base/Utilities";
+import { Fitness } from "../../Modules";
+import { FitnessIcon, FitnessFilter, AwardIcon } from "../../Components";
+import { baseStyles } from "../../Base/Styles";
 
 interface IStoreProps {
     activities: ActivityViewModel[];
@@ -52,15 +52,15 @@ class FitnessUser extends React.Component<IProps, {}> {
             <View>
                 <FitnessFilter onChange={this.updateData} />
                 <SectionList
-                    renderSectionHeader={({ section }) => section.data.length > 0 && <Text style={styles.header}>{section.key}</Text>}
+                    renderSectionHeader={({ section }) => section.data.length > 0 && <Text style={baseStyles.header}>{section.key}</Text>}
                     keyExtractor={(item: ActivityViewModel & AwardViewModel) => item.activityId || item.awardId}
                     sections={[
                         {
                             data: awards,
                             renderItem: ({ item }: { item: AwardViewModel }) => (
-                                <View style={styles.itemRow}>
+                                <View style={baseStyles.itemRow}>
                                     <AwardIcon placement={item.placement} />
-                                    <Text style={styles.column}>{item.description}</Text>
+                                    <Text style={baseStyles.column}>{item.description}</Text>
                                     <FitnessIcon fitnessMode={fitnessMode} amount={Number(item.value)} />
                                 </View>),
                             key: "Utmärkelser"
@@ -68,8 +68,8 @@ class FitnessUser extends React.Component<IProps, {}> {
                         {
                             data: activities,
                                 renderItem: ({ item }: { item: ActivityViewModel }) => (
-                                <View style={styles.itemRow}>
-                                    <Text style={styles.column}>{dateFormat(item.date, "yyyy-mm-dd dddd")}</Text>
+                                <View style={baseStyles.itemRow}>
+                                    <Text style={baseStyles.column}>{dateFormat(item.date, "yyyy-mm-dd dddd")}</Text>
                                     <FitnessIcon fitnessMode={fitnessMode} amount={item.amount} />
                                 </View>
                             ),
@@ -80,22 +80,6 @@ class FitnessUser extends React.Component<IProps, {}> {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    itemRow: {
-        flexDirection: "row",
-        margin: 10
-    },
-    header: {
-        fontWeight: "bold",
-        fontSize: 18,
-        margin: 10
-    },
-    column: {
-        marginLeft: 10,
-        flex: 1
-    }
-});
 
 function mapStateToProps(state: StoreDef, ownProps: IProps): IProps {
     return {

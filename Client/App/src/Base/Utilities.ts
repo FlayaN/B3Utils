@@ -104,20 +104,27 @@ export async function GetIdeas(): Promise<IdeaViewModel[]> {
 }
 
 export async function GetMessages(ideaId: string): Promise<MessageViewModel[]> {
-    let messages = await Get<MessageViewModel[]>(`api/v1/Ideas/${ideaId}/Messages`);
-    return messages;
+    return await Get<MessageViewModel[]>(`api/v1/Ideas/${ideaId}/Messages`);
 }
 
 export async function GetActivities(userId: string, type: FitnessType, filter: FilterType): Promise<ActivityViewModel[]> {
     return await Get<ActivityViewModel[]>(`api/v1/Activity/forUser/${userId}/${type}/${filter}`);
 }
 
-export async function AddMessage(message: MessageViewModel): Promise<Response> {
-    return Post(`api/v1/Ideas/${message.ideaId}/Messages`, message);
+export async function GetCompanies(): Promise<CompanyReferenceViewModel[]> {
+    return await Get<CompanyReferenceViewModel[]>("api/v1/CompanyReferences");
+}
+
+export async function GetCompanyPersons(companyId: string): Promise<CompanyPersonReferenceViewModel[]> {
+    return await Get<CompanyPersonReferenceViewModel[]>(`api/v1/CompanyReferences/${companyId}/Persons`);
 }
 
 export async function DeleteIdea(ideaId: string): Promise<Response> {
     return Delete(`api/v1/Ideas/${ideaId}`);
+}
+
+export async function AddMessage(message: MessageViewModel): Promise<Response> {
+    return Post(`api/v1/Ideas/${message.ideaId}/Messages`, message);
 }
 
 export async function AddUser(user: UserViewModel): Promise<Response> {
@@ -130,6 +137,14 @@ export async function AddActivity(activity: ActivityViewModel): Promise<Response
 
 export async function AddIdea(idea: IdeaViewModel): Promise<Response> {
     return Post("api/v1/Ideas", idea);
+}
+
+export async function AddCompany(company: CompanyReferenceViewModel): Promise<Response> {
+    return Post("api/v1/CompanyReferences", company);
+}
+
+export async function AddCompanyPerson(person: CompanyPersonReferenceViewModel): Promise<Response> {
+    return Post("api/v1/CompanyReferences/Persons", person);
 }
 
 export async function GetAwards(fitnessType: FitnessType, filterType: FilterType): Promise<AwardViewModel[]> {

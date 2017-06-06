@@ -10,9 +10,9 @@ import {
     Alert
 } from "react-native";
 
-import { GetMessages, AddMessage, DeleteIdea } from "../Base/Utilities";
+import { GetMessages, AddMessage, DeleteIdea } from "../../Base/Utilities";
 // import { Pages } from "../Base/Constants";
-import { Idea, Base } from "../Modules";
+import { Idea, Base } from "../../Modules";
 import { GiftedChat } from "react-native-gifted-chat";
 import moment from "moment";
 
@@ -63,7 +63,7 @@ class IdeaPage extends React.Component<IProps, {}> {
                     text: "Nej"
                 }
             ]
-        )
+        );
     }
     async componentDidMount() {
         await this.updateData();

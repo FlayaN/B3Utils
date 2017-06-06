@@ -13,7 +13,11 @@ import {
     Profile,
     Ideas,
     NewIdea,
-    Idea
+    Idea,
+    Companies,
+    Company,
+    NewCompany,
+    NewPerson
 } from "../Pages";
 import AppWithNavigationState from "./AppNavigator";
 
@@ -52,6 +56,30 @@ export const StackNav = StackNavigator({
         screen: Idea,
         navigationOptions: ({ navigation }) => ({
             title: `${navigation.state.params.header}`
+        })
+    },
+    [Pages.COMPANIES]: {
+        screen: Companies,
+        navigationOptions: {
+            title: "Kontaktnät"
+        }
+    },
+    [Pages.NEWCOMPANY]: {
+        screen: NewCompany,
+        navigationOptions: {
+            title: "Skapa nytt företag"
+        }
+    },
+    [Pages.COMPANY]: {
+        screen: Company,
+        navigationOptions: ({ navigation }) => ({
+            title: `${navigation.state.params.name}`
+        })
+    },
+    [Pages.NEWPERSON]: {
+        screen: NewPerson,
+        navigationOptions: ({ navigation }) => ({
+            title: `Skapa ny person på ${navigation.state.params.name}`
         })
     }
 });

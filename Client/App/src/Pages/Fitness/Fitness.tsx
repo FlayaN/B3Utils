@@ -15,13 +15,14 @@ import {
     ImageStyle
 } from "react-native";
 
-import { Fitness, Base } from "../Modules";
-import { GetUsers, GetUser, AddActivity, getDailyDistance, getDailySteps, GetAwards } from "../Base/Utilities";
-import { Pages } from "../Base/Constants";
+import { Fitness, Base } from "../../Modules";
+import { GetUsers, GetUser, AddActivity, getDailyDistance, getDailySteps, GetAwards } from "../../Base/Utilities";
+import { Pages } from "../../Base/Constants";
 import MCIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import AppleHealthKit from "react-native-apple-healthkit-rn0.40";
 import GoogleFit from "react-native-google-fit";
-import { FitnessIcon, FitnessFilter, AwardIcons } from "../Components";
+import { FitnessIcon, FitnessFilter, AwardIcons } from "../../Components";
+import { baseStyles } from "../../Base/Styles";
 
 interface IStoreProps {
     email: string;
@@ -149,7 +150,7 @@ class FitnessPage extends React.Component<IProps, IState> {
             <View style={styles.root}>
                 <FitnessFilter onChange={this.updateData} />
                 <SectionList
-                    renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
+                    renderSectionHeader={({ section }) => <Text style={baseStyles.header}>{section.key}</Text>}
                     keyExtractor={(x: ActivityViewModel) => x.userId}
                     refreshControl={(
                         <RefreshControl
@@ -158,10 +159,10 @@ class FitnessPage extends React.Component<IProps, IState> {
                     )}
                     renderItem={({ item, index }: { item: UserViewModel, index: number }) => (
                         <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.FITNESS_USER, params: item }); }}>
-                            <View style={styles.itemRow}>
+                            <View style={baseStyles.itemRow}>
                                 <Image style={styles.avatar} source={{ uri: item.avatarUrl }} />
                                 {index === 0 && <MCIcon style={styles.crown} size={30} color="gold" name="crown" />}
-                                <Text style={styles.column}>{item.name}</Text>
+                                <Text style={baseStyles.column}>{item.name}</Text>
                                 <AwardIcons awards={awards.filter((award: AwardViewModel) => award.userId === item.userId)} />
                                 <FitnessIcon fitnessMode={fitnessMode} amount={item.amount} />
                             </View>
@@ -176,19 +177,6 @@ class FitnessPage extends React.Component<IProps, IState> {
 }
 
 const styles = StyleSheet.create({
-    itemRow: {
-        flexDirection: "row",
-        margin: 10
-    } as ViewStyle,
-    header: {
-        fontWeight: "bold",
-        fontSize: 18,
-        margin: 10
-    } as TextStyle,
-    column: {
-        marginLeft: 10,
-        flex: 1
-    } as TextStyle,
     crown: {
         position: "absolute",
         marginLeft: 10,

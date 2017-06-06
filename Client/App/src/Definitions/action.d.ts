@@ -13,6 +13,11 @@ interface UserActivities {
     activities: ActivityViewModel[];
 }
 
+interface CompanyPersons {
+    companyId: string;
+    persons: CompanyPersonReferenceViewModel[];
+}
+
 interface IdeaMessages {
     ideaId: string;
     messages: MessageViewModel[];

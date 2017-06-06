@@ -4,7 +4,6 @@ import { bindActionCreators } from "redux";
 import {
     View,
     ViewStyle,
-    TextStyle,
     StyleSheet
 } from "react-native";
 
@@ -24,8 +23,8 @@ interface IOwnProps {
 }
 
 interface IProps extends IOwnProps {
-    store: IStoreProps;
-    fitnessActions: Fitness.Actions.ActionsMap;
+    store?: IStoreProps;
+    fitnessActions?: Fitness.Actions.ActionsMap;
 }
 
 class FitnessFilter extends React.Component<IProps, {}> {
@@ -95,15 +94,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         margin: 10
     } as ViewStyle,
-    header: {
-        fontWeight: "bold",
-        fontSize: 18,
-        margin: 10
-    } as TextStyle,
-    column: {
-        marginLeft: 10,
-        flex: 1
-    } as TextStyle,
     modePicker: {
         width: 100,
         marginTop: 10,
@@ -116,9 +106,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginRight: 10,
         flex: 1.5
-    } as ViewStyle,
-    root: {
-        flex: 1
     } as ViewStyle
 });
 

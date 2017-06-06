@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import { NavigationScreenProp } from "react-navigation";
 
-
 import moment from "moment";
 
 import {
@@ -13,12 +12,11 @@ import {
     Button
 } from "react-native";
 
-import { AddIdea } from "../Base/Utilities";
-// import { Pages } from "../Base/Constants";
+import { AddIdea, GetIdeas } from "../../Base/Utilities";
 
-import { FormTextInput } from "../Components";
+import { FormTextInput } from "../../Components";
 
-import { Base } from "../Modules";
+import { Base, Idea } from "../../Modules";
 
 interface IStoreProps {
     userID: string;
@@ -27,6 +25,7 @@ interface IStoreProps {
 interface IProps extends FormProps<IdeaViewModel, void, void> {
     store: IStoreProps;
     baseActions: Base.Actions.ActionsMap;
+    ideaActions: Idea.Actions.ActionsMap;
     navigation: NavigationScreenProp<any, any>;
 }
 
@@ -45,9 +44,9 @@ class NewIdea extends React.Component<IProps, {}> {
             messageCount: 0,
             timeStamp: moment().format()
         });
-        
+        this.props.ideaActions.setIdeas(await GetIdeas());
         this.props.reset();
-        // this.props.baseActions.shouldUpdateParent(true);
+        // tslint:disable-next-line:no-null-keyword
         this.props.navigation.goBack(null);
     }
     render() {
@@ -74,10 +73,10 @@ function mapStateToProps(state: StoreDef): IProps {
 
 function mapDispatchToProps(dispatch): IProps {
     return {
-        baseActions: bindActionCreators(Base.Actions.Actions, dispatch)
+        baseActions: bindActionCreators(Base.Actions.Actions, dispatch),
+        ideaActions: bindActionCreators(Idea.Actions.Actions, dispatch)
     } as IProps;
 }
-
 
 export default reduxForm({
     form: "newIdea",
@@ -86,22 +85,18 @@ export default reduxForm({
 
         if (!values.header) {
             errors.header = "Rubrik krävs";
-        }
-
-        if (values.header) {
-            if(!values.header.trim().length) {
+        } else {
+            if (!values.header.trim().length) {
                 errors.header = "Kräver mer än enbart \"whitespace\"";
-            } else if(values.header.length > 35) {
+            } else if (values.header.length > 35) {
                 errors.header = "För lång rubrik, max 35 tecken";
             }
         }
 
         if (!values.detail) {
             errors.detail = "Detailjer krävs";
-        }
-
-        if (values.detail) {
-            if(!values.detail.trim().length) {
+        } else {
+            if (!values.detail.trim().length) {
                 errors.detail = "Kräver mer än enbart \"whitespace\"";
             }
         }

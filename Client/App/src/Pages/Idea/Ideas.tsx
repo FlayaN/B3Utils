@@ -6,25 +6,20 @@ import {
     View,
     Text,
     SectionList,
-    StyleSheet,
     TouchableOpacity,
     RefreshControl,
     Button
 } from "react-native";
 
-import { Base, Idea } from "../Modules";
-import { GetIdeas } from "../Base/Utilities";
-import { Pages } from "../Base/Constants";
+import { Base, Idea } from "../../Modules";
+import { GetIdeas } from "../../Base/Utilities";
+import { Pages } from "../../Base/Constants";
 import Icon from "react-native-vector-icons/Ionicons";
+import { baseStyles } from "../../Base/Styles";
 
 interface IStoreProps {
     userID: string;
     ideas: IdeaViewModel[];
-}
-
-interface IListItem {
-    index: number;
-    item: IdeaViewModel;
 }
 
 interface IProps {
@@ -60,23 +55,23 @@ class Ideas extends React.Component<IProps, IState> {
     }
     render() {
         let { ideas } = this.props.store;
-        ideas = ideas.map(item => { return { ...item, key: item.id }; });
         return (
             <View style={{ flex: 1 }}>
                 <Button title="Skapa ny idé" onPress={() => this.props.baseActions.navigate({ to: Pages.NEWIDEA })} />
                 <SectionList
-                    renderSectionHeader={({ section }) => <Text style={styles.header}>{section.key}</Text>}
+                    renderSectionHeader={({ section }) => <Text style={baseStyles.header}>{section.key}</Text>}
+                    keyExtractor={(x: IdeaViewModel) => x.id}
                     refreshControl={<RefreshControl
                         onRefresh={() => { this.updateData(); }}
                         refreshing={this.state.refreshing} />}
-                    renderItem={(item: IListItem) => (
-                        <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.IDEA, params: item.item }); }}>
-                            <View style={styles.itemRow}>
-                                <View style={[styles.column]}>
-                                    <Text style={{ fontWeight: "bold" }}>{item.item.header}</Text>
-                                    <Text>{item.item.userName}</Text>
+                    renderItem={({ item }: { item: IdeaViewModel }) => (
+                        <TouchableOpacity onPress={() => { this.props.baseActions.navigate({ to: Pages.IDEA, params: item }); }}>
+                            <View style={baseStyles.itemRow}>
+                                <View style={[baseStyles.column]}>
+                                    <Text style={{ fontWeight: "bold" }}>{item.header}</Text>
+                                    <Text>{item.userName}</Text>
                                 </View>
-                                <Icon name="md-chatboxes" size={25}>{item.item.messageCount}</Icon>
+                                <Icon name="md-chatboxes" size={25}>{item.messageCount}</Icon>
                             </View>
                         </TouchableOpacity>
                     )}
@@ -87,24 +82,6 @@ class Ideas extends React.Component<IProps, IState> {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    itemRow: {
-        flexDirection: "row",
-        margin: 10,
-        maxHeight: 60
-    },
-    header: {
-        fontWeight: "bold",
-        fontSize: 18,
-        margin: 10,
-        marginTop: 0
-    },
-    column: {
-        marginLeft: 10,
-        flex: 1
-    }
-});
 
 function mapStateToProps(state: StoreDef): IProps {
     return {
